@@ -5,13 +5,9 @@ wit_bindgen::generate!({ generate_all });
 struct Component;
 
 impl Guest for Component {
-    fn generate_uuid(name: String) -> Result<Output, String> {
-        if name == "oops" {
-            Err("Ooops. Something went wrong.".to_string())
-        } else {
-            Ok(Output {
-                greet: format!("Hello, {}", name),
-            })
+    fn generate_uuid() -> Output {
+        Output {
+            uuid: String::from(uuid::Uuid::new_v4())
         }
     }
 }
