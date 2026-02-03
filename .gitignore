@@ -1,0 +1,5 @@
+# Rust output of the components
+*/**/target/*
+
+# publish files
+*.wasm
