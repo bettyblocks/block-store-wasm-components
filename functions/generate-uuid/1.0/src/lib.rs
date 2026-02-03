@@ -2,9 +2,9 @@ use crate::exports::betty_blocks::generate_uuid::generate_uuid::{Guest, Output};
 
 wit_bindgen::generate!({ generate_all });
 
-struct Component;
+struct GenerateUuid;
 
-impl Guest for Component {
+impl Guest for GenerateUuid {
     fn generate_uuid() -> Output {
         Output {
             uuid: String::from(uuid::Uuid::new_v4())
@@ -12,5 +12,20 @@ impl Guest for Component {
     }
 }
 
-export! {Component}
+export! {GenerateUuid}
     
+#[test]
+fn is_uuidv4_valid() {
+    let uuidv4 = GenerateUuid::generate_uuid();
+    assert_eq!(uuidv4.uuid.len(), 32 + 4);
+    for (index, character) in uuidv4.uuid.chars().enumerate() {
+        if index == 8 || index == 8 + 5 || index == 8 + 5 + 5 || index == 8 + 5 + 5 + 5 {
+            assert_eq!(character, '-');
+        } else if index == 14 {
+            assert_eq!(character, '4');
+        } else {
+            assert!(character.is_ascii_hexdigit());
+        }
+    }
+}
+
