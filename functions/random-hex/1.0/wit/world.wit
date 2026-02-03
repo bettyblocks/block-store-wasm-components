@@ -1,0 +1,14 @@
+package betty-blocks:random-hex@1.0.0;
+
+interface random-hex {
+    record output {
+        %greet: string
+    }
+
+    random-hex: func(name: string) -> result<output, string>;
+}
+
+world main {
+    export random-hex;
+}
+    
