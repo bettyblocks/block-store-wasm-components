@@ -21,8 +21,7 @@ jobs:
               functions/random-hex/1.0/target
             cache-all-crates: "true"
         - uses: extractions/setup-just@v3
-        # Install cargo binstall to remove compilation time for dependencies.
-        - run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        - uses: cargo-bins/cargo-binstall@main
         # This has to be force, as the registry for if wkg is installed can be incorrect.
         - run: cargo binstall wkg --no-confirm --force
 
