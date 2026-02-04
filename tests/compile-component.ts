@@ -23,20 +23,20 @@ const wasishim = new WASIShim({
 async function compileComponent(wasm: string) {
   const { files } = await transpile(wasm, {
     outDir: "",
-    nodejsCompat: true,
+    nodejsCompat: false,
     emitTypescriptDeclarations: false,
   });
 
-  const requirable = Object.keys(files).find((x) => x.endsWith(".js"));
-  if (!requirable) {
+  const wrapperScriptFile = Object.keys(files).find((x) => x.endsWith(".js"));
+  if (!wrapperScriptFile) {
     throw new Error("no js file found");
   }
 
-  const blob = new Blob([files[requirable]!]);
-  const blob_url = URL.createObjectURL(blob);
-  const js_functions = await import(blob_url);
+  const blob = new Blob([files[wrapperScriptFile]!]);
+  const blobUrl = URL.createObjectURL(blob);
+  const jsFunctions = await import(blobUrl);
 
-  return js_functions.instantiate(
+  return jsFunctions.instantiate(
     (path: string) =>
       new WebAssembly.Module(files[path]! as unknown as ArrayBuffer),
     wasishim.getImportObject(),

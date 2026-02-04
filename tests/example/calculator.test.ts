@@ -1,10 +1,10 @@
-import { compileComponent } from "./compile-component.ts";
+import { compileComponent } from "./../compile-component.ts";
 const { test } = Deno;
 import { expect } from "@std/expect";
 
 const { calculator: { add, subtract, divide, multiply } } =
   await compileComponent(
-    "./tests/calculator.wasm",
+    "./tests/example/calculator.wasm",
   );
 
 test("it adds numbers", () => {
