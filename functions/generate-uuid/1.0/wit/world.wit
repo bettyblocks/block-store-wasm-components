@@ -2,10 +2,10 @@ package betty-blocks:generate-uuid@1.0.0;
 
 interface generate-uuid {
     record output {
-        %greet: string
+        %uuid: string
     }
 
-    generate-uuid: func(name: string) -> result<output, string>;
+    generate-uuid: func() -> output;
 }
 
 world main {
