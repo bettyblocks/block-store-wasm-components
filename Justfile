@@ -3,6 +3,7 @@ VERSION := `cat .version 2>/dev/null || echo "0.1.0"`
 REGISTRY := env_var_or_default("REGISTRY", "ghcr.io")
 REPO_OWNER := env_var_or_default("REPO_OWNER", "bettyblocks")
 
+build: build-all
 build-all:
 	#!/usr/bin/env bash
 	for working_directory in $(just index); do
@@ -10,7 +11,12 @@ build-all:
 		(cd $working_directory && just build)
 	done
 
-build: build-all
+propagate-justfiles:
+	#!/usr/bin/env bash
+	for working_directory in $(just index); do
+		echo "--- Copying Justfile to $working_directory ---"
+		(cp workspace-justfile "$working_directory/Justfile")
+	done
 
 index:
 	#!/usr/bin/env bash
