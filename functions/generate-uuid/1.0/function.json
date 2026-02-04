@@ -6,6 +6,18 @@
     "name": "ActionsIcon"
   },
   "label": "Generate UUIDv4",
-  "options": [],
+  "options": [
+    {
+      "meta": {
+        "type": "Output",
+        "output": {
+          "type": "Text"
+        }
+      },
+      "name": "result",
+      "label": "Result",
+      "info": "Generate UUIDv4"
+    }
+  ],
   "yields": "NONE"
 }
