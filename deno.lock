@@ -7,7 +7,8 @@
     "jsr:@std/expect@^1.0.17": "1.0.17",
     "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
-    "npm:@bytecodealliance/jco-transpile@~0.1.1": "0.1.1"
+    "npm:@bytecodealliance/jco-transpile@~0.1.1": "0.1.1",
+    "npm:@bytecodealliance/preview2-shim@~0.17.7": "0.17.7"
   },
   "jsr": {
     "@std/assert@1.0.18": {
@@ -100,7 +101,8 @@
     "dependencies": [
       "jsr:@std/assert@1",
       "jsr:@std/expect@^1.0.17",
-      "npm:@bytecodealliance/jco-transpile@~0.1.1"
+      "npm:@bytecodealliance/jco-transpile@~0.1.1",
+      "npm:@bytecodealliance/preview2-shim@~0.17.7"
     ]
   }
 }
