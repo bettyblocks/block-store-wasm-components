@@ -1,11 +1,23 @@
 {
   "category": "Misc",
-  "description": "Description",
+  "description": "Generate a randomized UUIDv4",
   "icon": {
     "color": "Orange",
     "name": "ActionsIcon"
   },
-  "label": "Generate Uuid",
-  "options": [],
+  "label": "Generate UUIDv4",
+  "options": [
+    {
+      "meta": {
+        "type": "Output",
+        "output": {
+          "type": "Text"
+        }
+      },
+      "name": "result",
+      "label": "Result",
+      "info": "Generate UUIDv4"
+    }
+  ],
   "yields": "NONE"
 }
