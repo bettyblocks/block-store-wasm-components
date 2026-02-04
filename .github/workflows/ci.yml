@@ -35,8 +35,9 @@ jobs:
           # Makes warnings be treated as errors (be output to STDERR), so that the pipeline can pick up on warnings.
           run: RUSTFLAGS="--deny warnings" just build
 
+        - name: "quality-check"
+          run: just quality-check
+
         - name: "test-check"
           run: just test
 
-        - name: "quality-check"
-          run: just quality-check
