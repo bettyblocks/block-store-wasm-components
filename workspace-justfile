@@ -19,6 +19,6 @@ format:
 format-check:
 	cargo fmt --check
 
-quality:
+quality-check:
 	cargo clippy
 
