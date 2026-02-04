@@ -17,4 +17,3 @@ impl Guest for Component {
 }
 
 export! {Component}
-    
