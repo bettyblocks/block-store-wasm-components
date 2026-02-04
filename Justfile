@@ -30,6 +30,10 @@ quality-check: quality-check-all
 quality-check-all:
 	just run-just-command-all quality-check
 
+clean: clean-all
+clean-all:
+	just run-just-command-all clean
+
 run-just-command-all command_name:
 	#!/usr/bin/env bash
 	for working_directory in $(just index); do

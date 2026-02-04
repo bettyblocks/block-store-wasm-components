@@ -22,3 +22,5 @@ format-check:
 quality-check:
 	cargo clippy
 
+clean:
+	cargo clean
