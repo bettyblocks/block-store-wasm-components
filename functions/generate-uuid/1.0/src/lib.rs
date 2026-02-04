@@ -7,13 +7,13 @@ struct GenerateUuid;
 impl Guest for GenerateUuid {
     fn generate_uuid() -> Output {
         Output {
-            uuid: String::from(uuid::Uuid::new_v4())
+            uuid: String::from(uuid::Uuid::new_v4()),
         }
     }
 }
 
 export! {GenerateUuid}
-    
+
 #[test]
 fn is_uuidv4_valid() {
     let uuidv4 = GenerateUuid::generate_uuid();
@@ -28,4 +28,3 @@ fn is_uuidv4_valid() {
         }
     }
 }
-
