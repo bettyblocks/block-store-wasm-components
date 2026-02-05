@@ -48,12 +48,5 @@ jobs:
       - name: "test-check"
         run: just test
 
-      # integration-tests
-      - name: "install deps integration-tests"
-        run: deno install
-
-      - name: "check integration-tests"
-        run: deno fmt --check && deno lint
-
-      - name: "run integration-tests"
-        run: deno task test
+      - name: "integration-tests"
+        run: just integration-test
