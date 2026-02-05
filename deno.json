@@ -4,7 +4,7 @@
       "command": "deno test --allow-env --allow-read",
       "dependencies": ["generate-wasm"]
     },
-    "generate-wasm": "just --justfile functions/generate-uuid/1.0/Justfile build"
+    "generate-wasm": "just build"
   },
   "imports": {
     "@bytecodealliance/jco-transpile": "npm:@bytecodealliance/jco-transpile@^0.1.1",
