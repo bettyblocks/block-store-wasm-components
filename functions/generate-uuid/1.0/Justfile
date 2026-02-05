@@ -1,7 +1,8 @@
 fetch_wit_deps:
 	wkg wit fetch
 
-# mv will return a non-zero exit code if the file it is trying to move already exists and it is the same file.
+# mv will return a non-zero exit code if trying to move a file to a copy of itself.
+# Meaning, `./target/wasm32-wasip2/release/something.wasm` is the exact same as `./something.wasm`, making mv error.
 # We surpress it here as this is not an error in our case.
 move_wasm_to_root: 
 	mv ./target/wasm32-wasip2/release/*.wasm . 2> /dev/null || exit 0
