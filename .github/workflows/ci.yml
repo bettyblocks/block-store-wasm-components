@@ -1,59 +1,59 @@
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   run-ci:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v6
-        - uses: actions-rust-lang/setup-rust-toolchain@v1
-          with:
-            components: clippy, rustfmt
-            target: wasm32-wasip2
-            cache-directories: |
-              functions/generate-uuid/1.0/target
-              functions/random-hex/1.0/target
-            cache-all-crates: "true"
-        - uses: extractions/setup-just@v3
-        - uses: cargo-bins/cargo-binstall@main
-        # This has to be force, as binstall can incorrectly recognize that wkg is already installed by it being in its registry.
-        # By using force we ensure that it will still install the binary even if the registry falsely states it already exists.
-        - run: cargo binstall wkg --no-confirm --force
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy, rustfmt
+          target: wasm32-wasip2
+          cache-directories: |
+            functions/generate-uuid/1.0/target
+            functions/random-hex/1.0/target
+          cache-all-crates: "true"
+      - uses: extractions/setup-just@v3
+      - uses: cargo-bins/cargo-binstall@main
+      # This has to be force, as binstall can incorrectly recognize that wkg is already installed by it being in its registry.
+      # By using force we ensure that it will still install the binary even if the registry falsely states it already exists.
+      - run: cargo binstall wkg --no-confirm --force
 
-        - name: Install Deno
-          uses: denoland/setup-deno@v2
-          with:
-            deno-version: v2.x
-            cache: true
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+          cache: true
 
-        - name: "formatting-check"
-          run: |
-            echo "PATH=$PATH"
-            which wkg || ls -la $HOME/.cargo/bin
-            just format-check
+      - name: "formatting-check"
+        run: |
+          echo "PATH=$PATH"
+          which wkg || ls -la $HOME/.cargo/bin
+          just format-check
 
-        - name: "compile-check"
-          # Makes warnings be treated as errors (be output to STDERR), so that the pipeline can pick up on warnings.
-          run: RUSTFLAGS="--deny warnings" just build
+      - name: "compile-check"
+        # Makes warnings be treated as errors (be output to STDERR), so that the pipeline can pick up on warnings.
+        run: RUSTFLAGS="--deny warnings" just build
 
-        - name: "quality-check"
-          run: just quality-check
+      - name: "quality-check"
+        run: just quality-check
 
-        - name: "test-check"
-          run: just test
+      - name: "test-check"
+        run: just test
 
-        # integration-tests
-        - name: "install deps integration-tests"
-          run: deno install
+      # integration-tests
+      - name: "install deps integration-tests"
+        run: deno install
 
-        - name: "check integration-tests"
-          run: deno fmt --check && deno lint
+      - name: "check integration-tests"
+        run: deno fmt --check && deno lint
 
-        - name: "run integration-tests"
-          run: deno task test
+      - name: "run integration-tests"
+        run: deno task test
