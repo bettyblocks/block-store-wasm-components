@@ -1,0 +1,14 @@
+package betty-blocks:liquid@1.0.0;
+
+interface liquid {
+    record output {
+        %placeholder: string
+    }
+
+    liquid: func() -> output;
+}
+
+world main {
+    export liquid;
+}
+    
