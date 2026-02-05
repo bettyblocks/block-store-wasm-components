@@ -22,7 +22,8 @@ jobs:
             cache-all-crates: "true"
         - uses: extractions/setup-just@v3
         - uses: cargo-bins/cargo-binstall@main
-        # This has to be force, as the registry for if wkg is installed can be incorrect.
+        # This has to be force, as binstall can incorrectly recognize that wkg is already installed by it being in its registry.
+        # By using force we ensure that it will still install the binary even if the registry falsely states it already exists.
         - run: cargo binstall wkg --no-confirm --force
 
         - name: "formatting-check"
