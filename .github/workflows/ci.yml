@@ -26,6 +26,12 @@ jobs:
         # By using force we ensure that it will still install the binary even if the registry falsely states it already exists.
         - run: cargo binstall wkg --no-confirm --force
 
+        - name: Install Deno
+          uses: denoland/setup-deno@v2
+          with:
+            deno-version: v2.x
+            cache: true
+
         - name: "formatting-check"
           run: |
             echo "PATH=$PATH"
@@ -42,3 +48,12 @@ jobs:
         - name: "test-check"
           run: just test
 
+        # integration-tests
+        - name: "install deps integration-tests"
+          run: deno install
+
+        - name: "check integration-tests"
+          run: deno fmt --check && deno lint
+
+        - name: "run integration-tests"
+          run: deno task test
