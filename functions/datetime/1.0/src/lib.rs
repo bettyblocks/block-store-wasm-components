@@ -67,9 +67,7 @@ impl TimeOffset {
             let amount_of_days = time_delta.num_days();
             let extra_days = amount_of_days / 5 * 2;
             let offset_timestamp = timestamp
-                .checked_add_signed(
-                    *time_delta + chrono::TimeDelta::days(extra_days),
-                )
+                .checked_add_signed(*time_delta + chrono::TimeDelta::days(extra_days))
                 .ok_or_else(|| {
                     String::from("Could not offset the datetime by the specified amount")
                 })?;
