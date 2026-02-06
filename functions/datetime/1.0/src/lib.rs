@@ -65,10 +65,10 @@ impl TimeOffset {
         {
             // If you're only counting business days every week is 5 days instead of 7, so we add 2 days for every 5 in the offset we started with.
             let amount_of_days = time_delta.num_days();
-            let amount_of_non_business_days = amount_of_days / 5 * 2;
+            let extra_days = amount_of_days / 5 * 2;
             let offset_timestamp = timestamp
                 .checked_add_signed(
-                    *time_delta + chrono::TimeDelta::days(amount_of_non_business_days),
+                    *time_delta + chrono::TimeDelta::days(extra_days),
                 )
                 .ok_or_else(|| {
                     String::from("Could not offset the datetime by the specified amount")
