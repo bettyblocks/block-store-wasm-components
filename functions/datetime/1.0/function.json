@@ -1,0 +1,64 @@
+{
+  "description": "Generates and mutates datetime timestamps",
+  "label": "DateTime",
+  "category": "DateTime",
+  "icon": {
+    "name": "DateTimeIcon",
+    "color": "Yellow"
+  },
+  "options": [
+    {
+      "meta": {
+        "type": "Text"
+      },
+      "name": "timestamp",
+      "label": "Specify the starting timestamp in YYYY-MM-DDThh:mm:ss±hh:mm where the ending hours and minutes are the timezone offset from UTC",
+      "info": "The timestamp to be changed"
+    },
+    {
+      "meta": {
+        "type": "Output",
+        "output": {
+          "type": "Text"
+        }
+      },
+      "name": "result",
+      "label": "Result",
+      "info": "The result of the function"
+    },
+    {
+      "meta": {
+        "type": "Number"
+      },
+      "name": "offset-count",
+      "label": "The amount of offset to be added (can be negative)",
+      "info": "The multiplier for the offset size to be added to the timestamp"
+    },
+    {
+      "meta": {
+        "type": "Select",
+        "values": [
+          { "label": "Seconds", "value": "Seconds" },
+          { "label": "Minutes", "value": "Minutes" },
+          { "label": "Hours", "value": "Hours" },
+          { "label": "Days", "value": "Days" },
+          { "label": "Weeks", "value": "Weeks" },
+          { "label": "Months", "value": "Months" },
+          { "label": "Years", "value": "Years" }
+        ]
+      },
+      "name": "offset-size",
+      "label": "The size of the offset to be added",
+      "info": "The size of the offset that will be multiplied by the offset-count and added to the timestamp"
+    },
+    {
+      "meta": {
+        "type": "Text"
+      },
+      "name": "timezone",
+      "label": "Specify the timezone offset from UTC in ±hh:mm",
+      "info": "The timestamp to be changed"
+    }
+  ],
+  "yields": "NONE"
+}
