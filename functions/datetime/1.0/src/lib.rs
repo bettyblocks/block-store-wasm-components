@@ -246,4 +246,46 @@ mod tests {
             "1970-01-22T00:00:00+00:00"
         );
     }
+
+    #[test]
+    fn offset_datetime_in_business_days_starting_in_weekend_test() {
+        assert_eq!(
+            Component::offset_datetime_in_business_days(
+                String::from("1970-01-03T00:00:00+00:00"),
+                1,
+                OffsetSize::Days
+            )
+            .unwrap()
+            .as_str(),
+            "1970-01-06T00:00:00+00:00"
+        );
+    }
+
+    #[test]
+    fn offset_datetime_in_business_days_by_weeks_test() {
+        assert_eq!(
+            Component::offset_datetime_in_business_days(
+                String::from("1970-01-01T00:00:00+00:00"),
+                2,
+                OffsetSize::Weeks
+            )
+            .unwrap()
+            .as_str(),
+            "1970-01-15T00:00:00+00:00"
+        );
+    }
+
+    #[test]
+    fn offset_datetime_in_business_days_by_months_test() {
+        assert_eq!(
+            Component::offset_datetime_in_business_days(
+                String::from("1970-01-01T00:00:00+00:00"),
+                2,
+                OffsetSize::Months
+            )
+            .unwrap()
+            .as_str(),
+            "1970-03-01T00:00:00+00:00"
+        );
+    }
 }
