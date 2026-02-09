@@ -47,7 +47,10 @@ fn cannot_render_template_with_invalid_json() {
         String::from("hi {{something}}"),
         String::from("{ \"incorrect_value\" }"),
     );
-    assert_eq!(result.unwrap_err(), "JSON: expected `:` at line 1 column 21");
+    assert_eq!(
+        result.unwrap_err(),
+        "JSON: expected `:` at line 1 column 21"
+    );
 }
 
 #[test]
