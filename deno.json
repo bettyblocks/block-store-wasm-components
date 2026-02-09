@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "test": {
+      "command": "deno test --allow-env --allow-read",
+      "dependencies": ["generate-wasm"]
+    },
+    "generate-wasm": "just build"
+  },
+  "imports": {
+    "@bytecodealliance/jco-transpile": "npm:@bytecodealliance/jco-transpile@^0.1.1",
+    "@bytecodealliance/preview2-shim": "npm:@bytecodealliance/preview2-shim@^0.17.7",
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/expect": "jsr:@std/expect@^1.0.17"
+  }
+}
