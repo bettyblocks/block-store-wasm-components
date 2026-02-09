@@ -1,0 +1,10 @@
+package betty-blocks:split_text@1.0.0;
+
+interface split_text {
+    split_text: func() -> output;
+}
+
+world main {
+    export split_text;
+}
+
