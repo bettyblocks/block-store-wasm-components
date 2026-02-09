@@ -1,11 +1,32 @@
 {
-  "category": "Misc",
-  "description": "Description",
+  "description": "Creates a redirect response to the given url",
+  "label": "Redirect",
+  "category": "Web Flow",
   "icon": {
     "color": "Orange",
-    "name": "ActionsIcon"
+    "name": "PublicPageIcon"
   },
-  "label": "Redirect",
-  "options": [],
+  "options": [
+    {
+      "meta": {
+        "type": "Text"
+      },
+      "name": "redirectURL",
+      "label": "Redirect URL",
+      "info": "The url to redirect to",
+      "advanced": false
+    },
+    {
+      "meta": {
+        "type": "Output",
+        "output": {
+          "type": "Object"
+        }
+      },
+      "name": "result",
+      "label": "Response",
+      "info": "The redirection response object"
+    }
+  ],
   "yields": "NONE"
 }
