@@ -1,0 +1,11 @@
+{
+  "category": "Misc",
+  "description": "Description",
+  "icon": {
+    "color": "Orange",
+    "name": "ActionsIcon"
+  },
+  "label": "Endpoint Helpers",
+  "options": [],
+  "yields": "NONE"
+}
