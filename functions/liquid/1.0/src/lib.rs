@@ -1,4 +1,3 @@
-// TODO: Change definition here to match Crate name?
 use crate::exports::betty_blocks::liquid::liquid::Guest;
 
 wit_bindgen::generate!({ generate_all });
