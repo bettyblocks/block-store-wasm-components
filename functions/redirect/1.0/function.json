@@ -1,0 +1,11 @@
+{
+  "category": "Misc",
+  "description": "Description",
+  "icon": {
+    "color": "Orange",
+    "name": "ActionsIcon"
+  },
+  "label": "Redirect",
+  "options": [],
+  "yields": "NONE"
+}
