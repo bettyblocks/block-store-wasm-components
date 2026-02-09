@@ -7,7 +7,7 @@ struct Liquid;
 impl Guest for Liquid {
     fn liquid(template: String, variables: String) -> Result<String, String> {
         // This does not necessarily validate the JSON contents.
-        let variables_json: serde_json::Value =
+        let variables_json: serde_json::Map<String, serde_json::Value> =
             // This just gives line and character number, `JSON: ` makes it more obvious what the
             // error is to the user.
             serde_json::from_str(&variables).map_err(|error| format!("JSON: {}", error.to_string()))?;
