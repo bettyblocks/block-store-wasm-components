@@ -3,8 +3,12 @@ package betty-blocks:is-present@1.0.0;
 interface is-present {
     type json-string = string;
 
+    record output {
+        %result: bool
+    }
+
     // We use a json string here to represent the value, because it needs to be able to represent any type of value
-    is-present: func(value: json-string) -> result<bool, string>;
+    is-present: func(value: json-string) -> result<output, string>;
 }
 
 world main {

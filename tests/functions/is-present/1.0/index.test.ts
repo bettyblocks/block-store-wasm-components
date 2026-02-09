@@ -7,6 +7,6 @@ const wasmPath = "./functions/is-present/1.0/is_present.wasm";
 const { isPresent: { isPresent } } = await compileComponent(wasmPath);
 
 test("it works", () => {
-  const presence = isPresent("1");
-  expect(presence).toBe(true);
+  const { result } = isPresent("1");
+  expect(result).toBe(true);
 });
