@@ -1,11 +1,12 @@
 package betty-blocks:liquid@1.0.0;
 
 interface liquid {
-    record output {
-        %placeholder: string
+    record variable {
+        %key: string,
+        %value: string
     }
 
-    liquid: func() -> output;
+    liquid: func(template: string, variables: string) -> result<string, string>;
 }
 
 world main {
