@@ -1,7 +1,7 @@
 package betty-blocks:random-hex;
 
 interface random-hex {
-    generate: func(size: u32) -> string;
+    generate-random-hex: func(size: u32) -> string;
 }
 
 world main {

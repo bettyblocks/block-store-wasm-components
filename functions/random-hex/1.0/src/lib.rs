@@ -7,7 +7,7 @@ wit_bindgen::generate!({ generate_all });
 struct RandomHexGenerator;
 
 impl random_hex::Guest for RandomHexGenerator {
-    fn generate(size: u32) -> String {
+    fn generate_random_hex(size: u32) -> String {
         let mut rng_generator = rand::rng();
         let hex_generator_closure = || format!("{:X}", rng_generator.random_range(0..16));
         let hex_iterator = std::iter::repeat_with(hex_generator_closure).take(size as usize);
