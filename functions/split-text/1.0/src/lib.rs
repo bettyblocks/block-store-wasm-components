@@ -44,10 +44,7 @@ fn invalid_split_all_gives_one_item() {
 
 #[test]
 fn split_once_only_splits_once() {
-    let result = SplitText::split_once(
-        String::from("hi hi hi hi"),
-        String::from(" "),
-    );
+    let result = SplitText::split_once(String::from("hi hi hi hi"), String::from(" "));
     assert_eq!(result, Some((String::from("hi"), String::from("hi hi hi"))));
 }
 
