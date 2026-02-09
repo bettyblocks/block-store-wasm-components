@@ -15,16 +15,18 @@ impl Guest for Liquid {
         let globals =
             liquid::model::to_object(&variables_json).map_err(|error| error.to_string())?;
 
-        let rendered_template = liquid::ParserBuilder::with_stdlib()
-            .build()
-            .map_err(|error| error.to_string())?
-            .parse(&template)
-            .map_err(|error| error.to_string())?
-            .render(&globals)
-            .map_err(|error| error.to_string())?;
-
-        Ok(rendered_template)
+        Ok(render_template(&template, &globals).map_err(|error| error.to_string())?)
     }
+}
+
+fn render_template(
+    template: &str,
+    globals: &liquid::model::Object,
+) -> Result<String, liquid::Error> {
+    liquid::ParserBuilder::with_stdlib()
+        .build()?
+        .parse(&template)?
+        .render(&globals)
 }
 
 export! {Liquid}
