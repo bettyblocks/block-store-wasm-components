@@ -1,10 +1,11 @@
-package betty-blocks:split_text@1.0.0;
+package betty-blocks:split-text@1.0.0;
 
-interface split_text {
-    split_text: func() -> output;
+interface split-text {
+    split-all: func(text: string, split-by: string) -> list<string>;
+    split-once: func(text: string, split-by: string) -> option<tuple<string, string>>;
 }
 
 world main {
-    export split_text;
+    export split-text;
 }
 
