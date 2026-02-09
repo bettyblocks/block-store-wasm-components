@@ -36,7 +36,7 @@ jobs:
         run: |
           echo "PATH=$PATH"
           which wkg || ls -la $HOME/.cargo/bin
-          just format-check
+          RUSTFLAGS="--deny warnings" just format-check
 
       - name: "compile-check"
         # Makes warnings be treated as errors (be output to STDERR), so that the pipeline can pick up on warnings.
