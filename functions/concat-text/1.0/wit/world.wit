@@ -1,8 +1,10 @@
 package betty-blocks:concat-text@1.0.0;
 
 interface concat-text {
-    concat-strings: func(strings: list<string>) -> string;
-    concat-strings-with-separator: func(strings: list<string>, separator: string) -> string;
+    concat-strings: func(first-string: string, second-string: string) -> string;
+    concat-strings-with-separator: func(first-string: string, second-string: string, separator: string) -> string;
+    concat-string-list: func(strings: list<string>) -> string;
+    concat-string-list-with-separator: func(strings: list<string>, separator: string) -> string;
 }
 
 world main {
