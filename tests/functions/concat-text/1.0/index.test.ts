@@ -14,21 +14,26 @@ const {
 } = await compileComponent(wasmPath);
 
 test("it concats strings", () => {
-  const result = concatStrings("hi", "hi");
-  expect(result).toEqual("hihi");
+  const result = concatStrings("hi", "hooo");
+  expect(result).toEqual("hihooo");
 });
 
 test("it concats strings with a separator", () => {
-  const result = concatStringsWithSeparator("hi", "hi", " ");
-  expect(result).toEqual("hi hi");
+  const result = concatStringsWithSeparator("hi", "hi", "   ");
+  expect(result).toEqual("hi   hi");
 });
 
 test("it concats string lists", () => {
-  const result = concatStringList(["hi", "hi", "hi", "hi"]);
-  expect(result).toEqual("hihihihi");
+  const result = concatStringList(["hi", "ha", "hi", "123"]);
+  expect(result).toEqual("hihahi123");
 });
 
 test("it concats string lists with a separator", () => {
-  const result = concatStringListWithSeparator(["hi", "hi", "hi", "hi"], " ");
-  expect(result).toEqual("hi hi hi hi");
+  const result = concatStringListWithSeparator([
+    "something",
+    "what",
+    "hello",
+    "22!",
+  ], " ");
+  expect(result).toEqual("something what hello 22!");
 });

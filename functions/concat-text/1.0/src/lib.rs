@@ -28,40 +28,40 @@ export! {ConcatText}
 fn can_concat_two_strings() {
     let result = ConcatText::concat_strings(
         String::from("hi"),
-        String::from("hi"),
+        String::from("ha"),
     );
-    assert_eq!(result, String::from("hihi"));
+    assert_eq!(result, String::from("hiha"));
 }
 
 #[test]
 fn can_concat_two_strings_with_separator() {
     let result = ConcatText::concat_strings_with_separator(
         String::from("hi"),
-        String::from("hi"),
+        String::from("ho"),
         String::from(" "),
     );
-    assert_eq!(result, String::from("hi hi"));
+    assert_eq!(result, String::from("hi ho"));
 }
 
 #[test]
 fn can_concat_a_list_of_strings() {
     let result = ConcatText::concat_string_list(
-        vec!["hi", "hi", "hi", "hi"]
+        vec!["hi", "123", "ha", "ho"]
             .into_iter()
             .map(String::from)
             .collect(),
     );
-    assert_eq!(result, String::from("hihihihi"),);
+    assert_eq!(result, String::from("hi123haho"),);
 }
 
 #[test]
 fn can_concat_a_list_of_strings_with_a_separator() {
     let result = ConcatText::concat_string_list_with_separator(
-        vec!["hi", "hi", "hi", "hi"]
+        vec!["fi", "oa", "30", "22"]
             .into_iter()
             .map(String::from)
             .collect(),
         String::from(" "),
     );
-    assert_eq!(result, String::from("hi hi hi hi"),);
+    assert_eq!(result, String::from("fi oa 30 22"),);
 }
