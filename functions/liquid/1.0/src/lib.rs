@@ -8,7 +8,9 @@ impl Guest for Liquid {
     fn liquid(template: String, variables: String) -> Result<String, String> {
         // This does not necessarily validate the JSON contents.
         let variables_json: serde_json::Value =
-            serde_json::from_str(&variables).map_err(|error| error.to_string())?;
+            // This just gives line and character number, `JSON: ` makes it more obvious what the
+            // error is to the user.
+            serde_json::from_str(&variables).map_err(|error| format!("JSON: {}", error.to_string()))?;
 
         let globals =
             liquid::model::to_object(&variables_json).map_err(|error| error.to_string())?;
@@ -37,6 +39,15 @@ fn can_render_template_without_variables() {
 fn cannot_render_template_with_missing_variable() {
     let result = Liquid::liquid(String::from("hi {{something}}"), String::from("{}"));
     assert!(result.is_err());
+}
+
+#[test]
+fn cannot_render_template_with_invalid_json() {
+    let result = Liquid::liquid(
+        String::from("hi {{something}}"),
+        String::from("{ \"incorrect_value\" }"),
+    );
+    assert_eq!(result.unwrap_err(), "JSON: expected `:` at line 1 column 21");
 }
 
 #[test]
