@@ -6,7 +6,7 @@ interface liquid {
         %value: string
     }
 
-    liquid: func(template: string, variables: string) -> result<string, string>;
+    liquid: func(template: option<string>, template-variable: option<string>, variables: string) -> result<string, string>;
 }
 
 world main {
