@@ -18,7 +18,7 @@
       }
     },
     {
-      "info": "Using a variable, for instance from an record object, a config or just a regular variable",
+      "info": "Using a variable, for instance from an record object, a config or just a regular variable. This will take precedence over the template.",
       "meta": {
         "type": "Value",
         "allowedKinds": ["STRING"]
