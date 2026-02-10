@@ -29,6 +29,12 @@ clean: clean-all
 clean-all:
 	just run-just-command-all clean
 
+integration-test:
+    deno install
+    deno fmt --check
+    deno lint
+    deno task test
+
 run-just-command-all command_name:
 	#!/usr/bin/env bash
 	for working_directory in $(just index); do
@@ -39,4 +45,3 @@ run-just-command-all command_name:
 index:
 	#!/usr/bin/env bash
 	find functions -type f -name "Cargo.toml" -exec dirname {} \;
-
