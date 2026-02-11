@@ -4,7 +4,7 @@ import { expect } from "@std/expect";
 
 const wasmPath = "./functions/split-text/1.0/split_text.wasm";
 
-const { splitText: { splitAll, splitOnce } } = await compileComponent(wasmPath);
+const { splitText: { splitAll } } = await compileComponent(wasmPath);
 
 test("it can split all", () => {
   const splits = splitAll("hi hi hi hi", " ");
