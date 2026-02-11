@@ -9,11 +9,13 @@ impl Guest for SplitText {
         string.split(&split_by).map(String::from).collect()
     }
 
+    /* Commented out until tuples are supported.
     fn split_once(string: String, split_by: String) -> Option<(String, String)> {
         string
             .split_once(&split_by)
             .map(|tuple| (String::from(tuple.0), String::from(tuple.1)))
     }
+    */
 }
 
 export! {SplitText}
@@ -42,6 +44,7 @@ fn invalid_split_all_gives_one_item() {
     assert_eq!(result, vec!["hi hi hi hi"]);
 }
 
+/* Commented out until tuples are supported.
 #[test]
 fn split_once_only_splits_once() {
     let result = SplitText::split_once(String::from("hi hi hi hi"), String::from(" "));
@@ -56,3 +59,4 @@ fn invalid_split_once_gives_none() {
     );
     assert_eq!(result, None);
 }
+*/
