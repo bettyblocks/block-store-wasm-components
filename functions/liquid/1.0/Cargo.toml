@@ -1,0 +1,13 @@
+[package]
+name = "liquid_templating"
+version = "1.0.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+liquid = "0.26.11"
+serde_json = "1.0.149"
+wit-bindgen = "0.42.0"
+
