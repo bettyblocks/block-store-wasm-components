@@ -8,11 +8,11 @@ const { liquid: { liquid } } = await compileComponent(wasmPath);
 
 test("it works", () => {
   const renderedTemplate = liquid(
-    "hi {{something}}",
+    "hi {{ something | upcase }}",
     undefined,
     '{ "something": "value" }',
   );
-  expect(renderedTemplate).toBe("hi value");
+  expect(renderedTemplate).toBe("hi VALUE");
 });
 
 test("it gives template_variable precedence over template", () => {
