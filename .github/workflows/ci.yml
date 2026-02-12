@@ -19,6 +19,7 @@ jobs:
           cache-directories: |
             functions/generate-uuid/1.0/target
             functions/random-hex/1.0/target
+            functions/liquid/1.0/target
           cache-all-crates: "true"
       - uses: extractions/setup-just@v3
       - uses: cargo-bins/cargo-binstall@main
