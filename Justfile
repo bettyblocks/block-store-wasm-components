@@ -37,7 +37,7 @@ integration-test:
 
 run-just-command-all command_name:
 	#!/usr/bin/env bash
-	set -o pipefail
+	set -euo pipefail
 	for working_directory in $(just index); do
 		echo "--- Running {{ command_name }}s in $working_directory ---"
 		(cd $working_directory && just {{ command_name }})
