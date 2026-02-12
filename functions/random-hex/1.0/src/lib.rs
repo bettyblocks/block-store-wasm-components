@@ -23,20 +23,20 @@ mod tests {
 
     #[test]
     fn randomness_test() {
-        let hex1 = Component::generate(1000);
-        let hex2 = Component::generate(1000);
+        let hex1 = Component::generate_random_hex(1000);
+        let hex2 = Component::generate_random_hex(1000);
         assert_ne!(hex1, hex2)
     }
 
     #[test]
     fn length_test() {
-        let hex = Component::generate(1000);
+        let hex = Component::generate_random_hex(1000);
         assert_eq!(hex.len(), 1000)
     }
 
     #[test]
     fn content_validity_test() {
-        let hex = Component::generate(32);
+        let hex = Component::generate_random_hex(32);
         assert!(u128::from_str_radix(&hex, 16).is_ok());
     }
 }
