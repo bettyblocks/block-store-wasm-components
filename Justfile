@@ -1,8 +1,4 @@
-setup:
-	#!/usr/bin/env bash
-	set -o pipefail
-
-propagate-workspace-justfiles: setup
+propagate-workspace-justfiles:
 	#!/usr/bin/env bash
 	for working_directory in $(just index); do
 		echo "--- Copying Justfile to $working_directory ---"
@@ -30,21 +26,22 @@ quality-check-all:
 	just run-just-command-all quality-check
 
 clean: clean-all
-clean-all: setup
+clean-all:
 	just run-just-command-all clean
 
-integration-test: setup
+integration-test:
 	deno install
 	deno fmt --check
 	deno lint
 	deno task test
 
-run-just-command-all command_name: setup
+run-just-command-all command_name:
 	#!/usr/bin/env bash
+	set -o pipefail
 	for working_directory in $(just index); do
 		echo "--- Running {{ command_name }}s in $working_directory ---"
 		(cd $working_directory && just {{ command_name }})
 	done
 
-index: setup
+index:
 	find functions -type f -name "Cargo.toml" -exec dirname {} \;
