@@ -1,0 +1,24 @@
+package betty-blocks:format-endpoint-result@1.0.0;
+
+interface format-endpoint-result {
+    type json-string = string;
+
+    // The body and header values are json strings because they have unknown types
+    record header {
+        key: string,
+        value: json-string
+    }
+
+    record output {
+        status-code: u16,
+        body: json-string,
+        headers: list<tuple<string, json-string>>
+    }
+
+    format-endpoint-result: func(status-code: u16, body: json-string, headers: list<header>) -> output;
+}
+
+world main {
+    export format-endpoint-result;
+}
+    
