@@ -1,4 +1,5 @@
 setup:
+	#!/usr/bin/env bash
 	set -o pipefail
 
 propagate-workspace-justfiles: setup
@@ -29,7 +30,7 @@ quality-check-all:
 	just run-just-command-all quality-check
 
 clean: clean-all
-clean-all:
+clean-all: setup
 	just run-just-command-all clean
 
 integration-test: setup
@@ -45,5 +46,5 @@ run-just-command-all command_name: setup
 		(cd $working_directory && just {{ command_name }})
 	done
 
-index:
+index: setup
 	find functions -type f -name "Cargo.toml" -exec dirname {} \;
