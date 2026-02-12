@@ -35,7 +35,7 @@ integration-test:
     deno lint
     deno task test
 
-run-just-command-all command_name:
+run-just-command-all command_name: propagate-workspace-justfiles
 	#!/usr/bin/env bash
 	for working_directory in $(just index); do
 		echo "--- Running {{ command_name }}s in $working_directory ---"
