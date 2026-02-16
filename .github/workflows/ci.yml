@@ -12,19 +12,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy, rustfmt
           target: wasm32-wasip2
-          cache-directories: |
-            functions/generate-uuid/1.0/target
-            functions/random-hex/1.0/target
+          cache-directories: functions/*/1.0/target
           cache-all-crates: "true"
+
       - uses: extractions/setup-just@v3
+
       - uses: cargo-bins/cargo-binstall@main
-      # This has to be force, as binstall can incorrectly recognize that wkg is already installed by it being in its registry.
-      # By using force we ensure that it will still install the binary even if the registry falsely states it already exists.
-      - run: cargo binstall wkg --no-confirm --force
+
+      - name: Cache wkg
+        id: cache-wkg
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-wasm-pkg-tools
+        with:
+          path: ~/.cargo/bin/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-wkg.outputs.cache-hit != 'false' }}
+        continue-on-error: true
+        # This has to be force, as binstall can incorrectly recognize that wkg is already installed by it being in its registry.
+        # By using force we ensure that it will still install the binary even if the registry falsely states it already exists.
+        run: cargo binstall wkg --no-confirm --force
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -34,8 +51,6 @@ jobs:
 
       - name: "formatting-check"
         run: |
-          echo "PATH=$PATH"
-          which wkg || ls -la $HOME/.cargo/bin
           RUSTFLAGS="--deny warnings" just format-check
 
       - name: "compile-check"
@@ -43,10 +58,10 @@ jobs:
         run: RUSTFLAGS="--deny warnings" just build
 
       - name: "quality-check"
-        run: just quality-check
+        run: RUSTFLAGS="--deny warnings" just quality-check
 
       - name: "test-check"
-        run: just test
+        run: RUSTFLAGS="--deny warnings" just test
 
       - name: "integration-tests"
         run: just integration-test
