@@ -1,0 +1,41 @@
+{
+  "label": "Split",
+  "name": "split",
+  "version": "1.0",
+  "options": [
+    {
+      "meta": {
+        "type": "Text"
+      },
+      "name": "string",
+      "label": "Input string",
+      "info": "The original input string"
+    },
+    {
+      "meta": {
+        "type": "Text"
+      },
+      "name": "separator",
+      "label": "Separator",
+      "info": "Separator"
+    },
+    {
+      "meta": {
+        "type": "Output",
+        "output": {
+          "type": "Text"
+        }
+      },
+      "name": "result",
+      "label": "Result",
+      "info": "The result as an array"
+    }
+  ],
+  "description": "Returns an array after splitting a string on an argument/value.",
+  "category": "Misc",
+  "icon": {
+    "name": "PlusIcon",
+    "color": "Green"
+  },
+  "yields": "NONE"
+}
