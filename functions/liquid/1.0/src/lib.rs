@@ -7,7 +7,11 @@ struct Liquid;
 impl Guest for Liquid {
     // The template and template variable are both defined in the front-end, meaning we have to use
     // either or none as they're not required.
-    fn liquid(template: Option<String>, template_variable: Option<String>, variables: String) -> Result<String, String> {
+    fn liquid(
+        template: Option<String>,
+        template_variable: Option<String>,
+        variables: String,
+    ) -> Result<String, String> {
         if let Some(template) = template_variable {
             build_template(template, variables)
         } else if let Some(template) = template {
@@ -23,12 +27,11 @@ fn build_template(template: String, variables: String) -> Result<String, String>
     let variables_json: serde_json::Map<String, serde_json::Value> =
         // This just gives line and character number, `JSON: ` makes it more obvious what the
         // error is to the user.
-        serde_json::from_str(&variables).map_err(|error| format!("JSON: {}", error.to_string()))?;
+        serde_json::from_str(&variables).map_err(|error| format!("JSON: {}", error))?;
 
-    let globals =
-        liquid::model::to_object(&variables_json).map_err(|error| error.to_string())?;
+    let globals = liquid::model::to_object(&variables_json).map_err(|error| error.to_string())?;
 
-    Ok(render_template(&template, &globals).map_err(|error| error.to_string())?)
+    render_template(&template, &globals).map_err(|error| error.to_string())
 }
 
 fn render_template(
@@ -37,7 +40,7 @@ fn render_template(
 ) -> Result<String, liquid::Error> {
     liquid::ParserBuilder::with_stdlib()
         .build()?
-        .parse(&template)?
+        .parse(template)?
         .render(&globals)
 }
 
@@ -51,7 +54,11 @@ fn can_render_template_without_variables() {
 
 #[test]
 fn cannot_render_template_with_missing_variable() {
-    let result = Liquid::liquid(Some(String::from("hi {{something}}")), None, String::from("{}"));
+    let result = Liquid::liquid(
+        Some(String::from("hi {{something}}")),
+        None,
+        String::from("{}"),
+    );
     assert!(result.is_err());
 }
 
@@ -103,11 +110,6 @@ fn template_variable_definition_takes_precedence() {
 
 #[test]
 fn no_template_or_template_variable_defintion_returns_empty_string() {
-    let result = Liquid::liquid(
-        None,
-        None,
-        String::from("{}"),
-    )
-    .unwrap();
+    let result = Liquid::liquid(None, None, String::from("{}")).unwrap();
     assert_eq!(result, "");
 }
