@@ -1,0 +1,15 @@
+package betty-blocks:liquid@1.0.0;
+
+interface liquid {
+    record variable {
+        %key: string,
+        %value: string
+    }
+
+    liquid: func(template: option<string>, template-variable: option<string>, variables: string) -> result<string, string>;
+}
+
+world main {
+    export liquid;
+}
+    
