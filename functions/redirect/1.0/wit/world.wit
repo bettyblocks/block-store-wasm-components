@@ -1,0 +1,19 @@
+package betty-blocks:redirect@1.0.0;
+
+interface redirect {
+    type json-string = string;
+
+    // The body and header values are json strings because they have unknown types
+    record output {
+        status-code: u16,
+        body: json-string,
+        headers: list<tuple<string, json-string>>
+    }
+
+    redirect: func(redirect-URL: string) -> output;
+}
+
+world main {
+    export redirect;
+}
+    
