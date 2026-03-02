@@ -2,7 +2,7 @@ import { compileComponent } from "../../../compile-component.ts";
 const { test } = Deno;
 import { expect } from "@std/expect";
 
-const wasmPath = "./functions/split-text/1.0/split_text.wasm";
+const wasmPath = "./components/split-text/1.0/split_text.wasm";
 
 const { splitText: { splitAll } } = await compileComponent(wasmPath);
 

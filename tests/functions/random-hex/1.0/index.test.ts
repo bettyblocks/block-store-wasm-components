@@ -2,7 +2,7 @@ import { compileComponent } from "../../../compile-component.ts";
 const { test } = Deno;
 import { expect } from "@std/expect";
 
-const wasmPath = "./functions/random-hex/1.0/random_hex.wasm";
+const wasmPath = "./components/random-hex/1.0/random_hex.wasm";
 
 const { randomHex: { generateRandomHex } } = await compileComponent(wasmPath);
 
