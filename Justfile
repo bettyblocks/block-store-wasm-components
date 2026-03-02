@@ -44,4 +44,4 @@ run-just-command-all command_name: propagate-workspace-justfiles
 	done
 
 index:
-	find functions -type f -name "Cargo.toml" -exec dirname {} \;
+	find components -type f -name "Cargo.toml" ! -path "*/open-id-connect/*" -exec dirname {} \;

@@ -1,0 +1,17 @@
+build:
+	wash build
+
+test:
+	cargo test
+
+format:
+	cargo fmt
+
+format-check:
+	cargo fmt --check
+
+quality-check:
+	cargo clippy
+
+clean:
+	cargo clean

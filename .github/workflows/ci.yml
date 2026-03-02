@@ -17,7 +17,7 @@ jobs:
         with:
           components: clippy, rustfmt
           target: wasm32-wasip2
-          cache-directories: functions/*/1.0/target
+          cache-directories: components/*/target components/*/1.0/target
           cache-all-crates: "true"
 
       - uses: extractions/setup-just@v3
@@ -52,16 +52,21 @@ jobs:
       - name: "formatting-check"
         run: |
           RUSTFLAGS="--deny warnings" just format-check
+          RUSTFLAGS="--deny warnings" cargo fmt --check --manifest-path components/open-id-connect/Cargo.toml
 
       - name: "compile-check"
         # Makes warnings be treated as errors (be output to STDERR), so that the pipeline can pick up on warnings.
         run: RUSTFLAGS="--deny warnings" just build
 
       - name: "quality-check"
-        run: RUSTFLAGS="--deny warnings" just quality-check
+        run: |
+          RUSTFLAGS="--deny warnings" just quality-check
+          RUSTFLAGS="--deny warnings" cargo clippy --manifest-path components/open-id-connect/Cargo.toml
 
       - name: "test-check"
-        run: RUSTFLAGS="--deny warnings" just test
+        run: |
+          RUSTFLAGS="--deny warnings" just test
+          RUSTFLAGS="--deny warnings" cargo test --manifest-path components/open-id-connect/Cargo.toml
 
       - name: "integration-tests"
         run: just integration-test
