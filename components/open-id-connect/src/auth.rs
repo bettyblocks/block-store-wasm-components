@@ -14,6 +14,7 @@ use crate::params::build_query_string;
 // ---------------------------------------------------------------------------
 
 /// Pure URL construction — no HTTP.
+#[allow(clippy::too_many_arguments)]
 pub fn build_authorization_url(
     authorization_endpoint: String,
     client_id: String,

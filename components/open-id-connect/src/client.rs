@@ -129,13 +129,13 @@ pub fn post_form(url: &str, params: &[(&str, &str)]) -> Result<Value, ApiError> 
     let headers = Fields::new();
     headers
         .set(
-            &"Content-Type".to_string(),
+            "Content-Type",
             &[b"application/x-www-form-urlencoded".to_vec()],
         )
         .ok();
     headers
         .set(
-            &"Content-Length".to_string(),
+            "Content-Length",
             &[body_bytes.len().to_string().into_bytes()],
         )
         .ok();
@@ -164,7 +164,7 @@ pub fn post_form_empty(url: &str, params: &[(&str, &str)]) -> Result<(), ApiErro
     let headers = Fields::new();
     headers
         .set(
-            &"Content-Type".to_string(),
+            "Content-Type",
             &[b"application/x-www-form-urlencoded".to_vec()],
         )
         .ok();
@@ -192,7 +192,7 @@ pub fn get_json(url: &str, bearer: Option<&str>) -> Result<Value, ApiError> {
     if let Some(token) = bearer {
         headers
             .set(
-                &"Authorization".to_string(),
+                "Authorization",
                 &[format!("Bearer {token}").into_bytes()],
             )
             .ok();
