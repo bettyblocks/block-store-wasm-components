@@ -52,7 +52,11 @@ fn parse_url(url: &str) -> Result<ParsedUrl, ApiError> {
         None => (rest.to_string(), "/".to_string()),
     };
 
-    Ok(ParsedUrl { scheme, authority, path_and_query })
+    Ok(ParsedUrl {
+        scheme,
+        authority,
+        path_and_query,
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +103,11 @@ fn send(request: OutgoingRequest) -> Result<Vec<u8>, ApiError> {
             let error = v["error"].as_str().unwrap_or("http_error").to_string();
             let desc = v["error_description"].as_str().map(str::to_string);
             let uri = v["error_uri"].as_str().map(str::to_string);
-            Err(ApiError { error, error_description: desc, error_uri: uri })
+            Err(ApiError {
+                error,
+                error_description: desc,
+                error_uri: uri,
+            })
         } else {
             Err(api_err(
                 "http_error",
@@ -145,8 +153,7 @@ pub fn post_form(url: &str, params: &[(&str, &str)]) -> Result<Value, ApiError> 
     OutgoingBody::finish(out_body, None).ok();
 
     let bytes = send(req)?;
-    serde_json::from_slice::<Value>(&bytes)
-        .map_err(|e| api_err("parse_error", &e.to_string()))
+    serde_json::from_slice::<Value>(&bytes).map_err(|e| api_err("parse_error", &e.to_string()))
 }
 
 /// POST `application/x-www-form-urlencoded` → expect empty / 200 body.
@@ -198,6 +205,5 @@ pub fn get_json(url: &str, bearer: Option<&str>) -> Result<Value, ApiError> {
     req.set_path_with_query(Some(&parsed.path_and_query)).ok();
 
     let bytes = send(req)?;
-    serde_json::from_slice::<Value>(&bytes)
-        .map_err(|e| api_err("parse_error", &e.to_string()))
+    serde_json::from_slice::<Value>(&bytes).map_err(|e| api_err("parse_error", &e.to_string()))
 }

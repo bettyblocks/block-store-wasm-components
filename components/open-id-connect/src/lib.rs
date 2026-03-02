@@ -61,7 +61,14 @@ impl Guest for Component {
         redirect_uri: String,
         code_verifier: Option<String>,
     ) -> Result<TokenResponse, ApiError> {
-        auth::exchange_code(token_endpoint, client_id, client_secret, code, redirect_uri, code_verifier)
+        auth::exchange_code(
+            token_endpoint,
+            client_id,
+            client_secret,
+            code,
+            redirect_uri,
+            code_verifier,
+        )
     }
 
     fn refresh_access_token(
@@ -73,10 +80,7 @@ impl Guest for Component {
         auth::refresh_access_token(token_endpoint, client_id, client_secret, refresh_token)
     }
 
-    fn exchange_jwt_bearer(
-        token_endpoint: String,
-        assertion: String,
-    ) -> BearerTokenResult {
+    fn exchange_jwt_bearer(token_endpoint: String, assertion: String) -> BearerTokenResult {
         auth::exchange_jwt_bearer(token_endpoint, assertion)
     }
 

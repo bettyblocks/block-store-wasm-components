@@ -42,7 +42,10 @@ fn token_response_expires_in_absent_is_none() {
 #[test]
 fn token_response_refresh_token_present() {
     let v = json!({ "access_token": "", "token_type": "Bearer", "refresh_token": "rt123" });
-    assert_eq!(json_to_token_response(&v).refresh_token.as_deref(), Some("rt123"));
+    assert_eq!(
+        json_to_token_response(&v).refresh_token.as_deref(),
+        Some("rt123")
+    );
 }
 
 #[test]
@@ -54,7 +57,10 @@ fn token_response_refresh_token_absent_is_none() {
 #[test]
 fn token_response_parses_id_token() {
     let v = json!({ "access_token": "", "token_type": "Bearer", "id_token": "eyJ.payload.sig" });
-    assert_eq!(json_to_token_response(&v).id_token.as_deref(), Some("eyJ.payload.sig"));
+    assert_eq!(
+        json_to_token_response(&v).id_token.as_deref(),
+        Some("eyJ.payload.sig")
+    );
 }
 
 // -----------------------------------------------------------------------
@@ -155,8 +161,12 @@ fn discovery_parses_grant_types_supported() {
         "grant_types_supported": ["authorization_code", "refresh_token"]
     });
     let d = json_to_discovery(&v);
-    assert!(d.grant_types_supported.contains(&"authorization_code".to_string()));
-    assert!(d.grant_types_supported.contains(&"refresh_token".to_string()));
+    assert!(d
+        .grant_types_supported
+        .contains(&"authorization_code".to_string()));
+    assert!(d
+        .grant_types_supported
+        .contains(&"refresh_token".to_string()));
 }
 
 #[test]
@@ -166,8 +176,12 @@ fn discovery_parses_code_challenge_methods() {
         "code_challenge_methods_supported": ["S256", "plain"]
     });
     let d = json_to_discovery(&v);
-    assert!(d.code_challenge_methods_supported.contains(&"S256".to_string()));
-    assert!(d.code_challenge_methods_supported.contains(&"plain".to_string()));
+    assert!(d
+        .code_challenge_methods_supported
+        .contains(&"S256".to_string()));
+    assert!(d
+        .code_challenge_methods_supported
+        .contains(&"plain".to_string()));
 }
 
 // -----------------------------------------------------------------------

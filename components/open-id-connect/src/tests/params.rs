@@ -72,7 +72,10 @@ fn build_query_string_encodes_value() {
 
 #[test]
 fn build_query_string_encodes_key() {
-    assert_eq!(build_query_string(&[("hello world", "x")]), "hello%20world=x");
+    assert_eq!(
+        build_query_string(&[("hello world", "x")]),
+        "hello%20world=x"
+    );
 }
 
 #[test]

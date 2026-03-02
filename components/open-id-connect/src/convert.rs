@@ -23,7 +23,11 @@ fn u32_field(v: &Value, key: &str) -> u32 {
 fn str_list(v: &Value, key: &str) -> Vec<String> {
     v[key]
         .as_array()
-        .map(|a| a.iter().filter_map(|x| x.as_str().map(String::from)).collect())
+        .map(|a| {
+            a.iter()
+                .filter_map(|x| x.as_str().map(String::from))
+                .collect()
+        })
         .unwrap_or_default()
 }
 

@@ -1,5 +1,4 @@
 use crate::client::{get_json, post_form, post_form_empty};
-use crate::params::build_query_string;
 use crate::convert::{
     json_to_device_auth_response, json_to_discovery, json_to_jwks, json_to_token_response,
     json_to_user_info,
@@ -8,6 +7,7 @@ use crate::oidc::client::types::{
     ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
     TokenResponse, UserInfo,
 };
+use crate::params::build_query_string;
 
 // ---------------------------------------------------------------------------
 // Implementations
@@ -28,7 +28,11 @@ pub fn build_authorization_url(
     login_hint: Option<String>,
     prompt: Option<String>,
 ) -> Result<String, ApiError> {
-    let scope_str = scope.split(',').map(str::trim).collect::<Vec<_>>().join(" ");
+    let scope_str = scope
+        .split(',')
+        .map(str::trim)
+        .collect::<Vec<_>>()
+        .join(" ");
     let mut params: Vec<(&str, String)> = vec![
         ("client_id", client_id),
         ("redirect_uri", redirect_uri),
@@ -36,10 +40,18 @@ pub fn build_authorization_url(
         ("response_type", response_type),
     ];
 
-    if let Some(v) = state        { params.push(("state", v)); }
-    if let Some(v) = nonce        { params.push(("nonce", v)); }
-    if let Some(v) = response_mode { params.push(("response_mode", v)); }
-    if let Some(v) = code_challenge { params.push(("code_challenge", v)); }
+    if let Some(v) = state {
+        params.push(("state", v));
+    }
+    if let Some(v) = nonce {
+        params.push(("nonce", v));
+    }
+    if let Some(v) = response_mode {
+        params.push(("response_mode", v));
+    }
+    if let Some(v) = code_challenge {
+        params.push(("code_challenge", v));
+    }
     if let Some(m) = code_challenge_method {
         let method = match m {
             CodeChallengeMethod::Plain => "plain".to_string(),
@@ -47,11 +59,19 @@ pub fn build_authorization_url(
         };
         params.push(("code_challenge_method", method));
     }
-    if let Some(v) = login_hint   { params.push(("login_hint", v)); }
-    if let Some(v) = prompt       { params.push(("prompt", v)); }
+    if let Some(v) = login_hint {
+        params.push(("login_hint", v));
+    }
+    if let Some(v) = prompt {
+        params.push(("prompt", v));
+    }
 
     let pairs: Vec<(&str, &str)> = params.iter().map(|(k, v)| (*k, v.as_str())).collect();
-    Ok(format!("{}?{}", authorization_endpoint, build_query_string(&pairs)))
+    Ok(format!(
+        "{}?{}",
+        authorization_endpoint,
+        build_query_string(&pairs)
+    ))
 }
 
 pub fn exchange_code(
@@ -96,10 +116,7 @@ pub fn refresh_access_token(
     Ok(json_to_token_response(&v))
 }
 
-pub fn exchange_jwt_bearer(
-    token_endpoint: String,
-    assertion: String,
-) -> BearerTokenResult {
+pub fn exchange_jwt_bearer(token_endpoint: String, assertion: String) -> BearerTokenResult {
     match post_form(
         &token_endpoint,
         &[
@@ -123,7 +140,11 @@ pub fn initiate_device_auth(
     client_id: String,
     scope: String,
 ) -> Result<DeviceAuthResponse, ApiError> {
-    let scope_str = scope.split(',').map(str::trim).collect::<Vec<_>>().join(" ");
+    let scope_str = scope
+        .split(',')
+        .map(str::trim)
+        .collect::<Vec<_>>()
+        .join(" ");
     let v = post_form(
         &device_authorization_endpoint,
         &[("client_id", &client_id), ("scope", &scope_str)],
