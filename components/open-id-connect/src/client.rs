@@ -191,10 +191,7 @@ pub fn get_json(url: &str, bearer: Option<&str>) -> Result<Value, ApiError> {
     let headers = Fields::new();
     if let Some(token) = bearer {
         headers
-            .set(
-                "Authorization",
-                &[format!("Bearer {token}").into_bytes()],
-            )
+            .set("Authorization", &[format!("Bearer {token}").into_bytes()])
             .ok();
     }
 
