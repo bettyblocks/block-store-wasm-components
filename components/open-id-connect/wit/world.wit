@@ -11,10 +11,22 @@ package betty-blocks:open-id-connect@1.0.0;
 
 interface types {
 
-  record api-error {
+  /// Holds the full OAuth/OIDC error response body (RFC 6749 §5.2).
+  record server-error-body {
     error: string,
     error-description: option<string>,
     error-uri: option<string>,
+  }
+
+  variant api-error {
+    /// Network or HTTP transport error.
+    http-error(string),
+    /// OAuth/OIDC server returned an error response (RFC 6749 §5.2).
+    server-error(server-error-body),
+    /// Response body could not be parsed as valid JSON.
+    parse-error(string),
+    /// URL has an unsupported or missing scheme.
+    invalid-url(string),
   }
 
   enum code-challenge-method {
@@ -91,6 +103,7 @@ interface types {
 interface oidc-client {
   use types.{
     api-error,
+    server-error-body,
     code-challenge-method,
     token-response,
     device-auth-response,

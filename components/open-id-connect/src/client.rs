@@ -1,21 +1,11 @@
 use serde_json::Value;
 
-use crate::betty_blocks::open_id_connect::types::ApiError;
+use crate::betty_blocks::open_id_connect::types::{ApiError, ServerErrorBody};
 use crate::params::build_query_string;
 use crate::wasi::http::outgoing_handler;
 use crate::wasi::http::types::{
     Fields, Method, OutgoingBody, OutgoingRequest, RequestOptions, Scheme,
 };
-
-impl ApiError {
-    fn new(error: impl Into<String>, description: impl Into<String>) -> Self {
-        Self {
-            error: error.into(),
-            error_description: Some(description.into()),
-            error_uri: None,
-        }
-    }
-}
 
 struct ParsedUrl {
     scheme: Scheme,
@@ -30,10 +20,9 @@ impl ParsedUrl {
         } else if let Some(r) = url.strip_prefix("http://") {
             (Scheme::Http, r)
         } else {
-            return Err(ApiError::new(
-                "invalid_url",
-                format!("Unsupported scheme in URL: {url}"),
-            ));
+            return Err(ApiError::InvalidUrl(format!(
+                "Unsupported scheme in URL: {url}"
+            )));
         };
 
         let (authority, path_and_query) = match rest.find('/') {
@@ -59,10 +48,9 @@ fn read_body(body: crate::wasi::http::types::IncomingBody) -> Result<Vec<u8>, Ap
             Ok(chunk) if chunk.is_empty() => break,
             Ok(chunk) => buf.extend_from_slice(&chunk),
             Err(e) => {
-                return Err(ApiError::new(
-                    "http_error",
-                    format!("failed to read response body: {e:?}"),
-                ))
+                return Err(ApiError::HttpError(format!(
+                    "failed to read response body: {e:?}"
+                )))
             }
         }
     }
@@ -74,7 +62,7 @@ fn read_body(body: crate::wasi::http::types::IncomingBody) -> Result<Vec<u8>, Ap
 fn send(request: OutgoingRequest) -> Result<Vec<u8>, ApiError> {
     let opts = RequestOptions::new();
     let future = outgoing_handler::handle(request, Some(opts))
-        .map_err(|e| ApiError::new("http_error", format!("outgoing-handler: {e:?}")))?;
+        .map_err(|e| ApiError::HttpError(format!("outgoing-handler: {e:?}")))?;
 
     future.subscribe().block();
 
@@ -82,8 +70,8 @@ fn send(request: OutgoingRequest) -> Result<Vec<u8>, ApiError> {
         .get()
         // Unreachable: we blocked until the future resolved above.
         .expect("response must be present after blocking")
-        .map_err(|()| ApiError::new("http_error", "response error"))?
-        .map_err(|e| ApiError::new("http_error", format!("response: {e:?}")))?;
+        .map_err(|()| ApiError::HttpError("response error".into()))?
+        .map_err(|e| ApiError::HttpError(format!("response: {e:?}")))?;
 
     let status = response.status();
     let body = response
@@ -96,19 +84,16 @@ fn send(request: OutgoingRequest) -> Result<Vec<u8>, ApiError> {
         Ok(bytes)
     } else {
         if let Ok(v) = serde_json::from_slice::<Value>(&bytes) {
-            let error = v["error"].as_str().unwrap_or("http_error").to_string();
-            let desc = v["error_description"].as_str().map(str::to_string);
-            let uri = v["error_uri"].as_str().map(str::to_string);
-            Err(ApiError {
-                error,
-                error_description: desc,
-                error_uri: uri,
-            })
+            Err(ApiError::ServerError(ServerErrorBody {
+                error: v["error"].as_str().unwrap_or("server_error").to_string(),
+                error_description: v["error_description"].as_str().map(str::to_string),
+                error_uri: v["error_uri"].as_str().map(str::to_string),
+            }))
         } else {
-            Err(ApiError::new(
-                "http_error",
-                format!("HTTP {status}: {}", String::from_utf8_lossy(&bytes)),
-            ))
+            Err(ApiError::HttpError(format!(
+                "HTTP {status}: {}",
+                String::from_utf8_lossy(&bytes)
+            )))
         }
     }
 }
@@ -122,7 +107,7 @@ fn write_body(req: &OutgoingRequest, body_bytes: &[u8]) -> Result<(), ApiError> 
         .expect("output stream should always be available on a fresh body");
     writer
         .blocking_write_and_flush(body_bytes)
-        .map_err(|e| ApiError::new("http_error", format!("failed to write request body: {e:?}")))?;
+        .map_err(|e| ApiError::HttpError(format!("failed to write request body: {e:?}")))?;
     drop(writer);
     OutgoingBody::finish(out_body, None)
         .expect("finishing the body should not fail after writing is complete");
@@ -163,7 +148,7 @@ fn post_form_bytes(url: &str, params: &[(&str, &str)]) -> Result<Vec<u8>, ApiErr
 
 pub fn post_form(url: &str, params: &[(&str, &str)]) -> Result<Value, ApiError> {
     let bytes = post_form_bytes(url, params)?;
-    serde_json::from_slice::<Value>(&bytes).map_err(|e| ApiError::new("parse_error", e.to_string()))
+    serde_json::from_slice::<Value>(&bytes).map_err(|e| ApiError::ParseError(e.to_string()))
 }
 
 pub fn post_form_empty(url: &str, params: &[(&str, &str)]) -> Result<(), ApiError> {
@@ -191,5 +176,5 @@ pub fn get_json(url: &str, bearer: Option<&str>) -> Result<Value, ApiError> {
         .expect("path should be settable before the request is sent");
 
     let bytes = send(req)?;
-    serde_json::from_slice::<Value>(&bytes).map_err(|e| ApiError::new("parse_error", e.to_string()))
+    serde_json::from_slice::<Value>(&bytes).map_err(|e| ApiError::ParseError(e.to_string()))
 }
