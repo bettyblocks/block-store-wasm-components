@@ -1,5 +1,17 @@
-use crate::auth::build_authorization_url;
+use crate::auth::{build_authorization_url, AuthorizationUrlOptions};
 use crate::betty_blocks::open_id_connect::types::CodeChallengeMethod;
+
+fn no_options() -> AuthorizationUrlOptions {
+    AuthorizationUrlOptions {
+        state: None,
+        nonce: None,
+        response_mode: None,
+        code_challenge: None,
+        code_challenge_method: None,
+        login_hint: None,
+        prompt: None,
+    }
+}
 
 fn build_url(
     endpoint: &str,
@@ -14,13 +26,7 @@ fn build_url(
         redirect_uri.into(),
         scope.into(),
         response_type.into(),
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
+        no_options(),
     )
     .unwrap()
 }
@@ -128,13 +134,10 @@ fn build_authorization_url_includes_state_when_some() {
         "https://app/cb".into(),
         "openid".into(),
         "code".into(),
-        Some("xyz123".into()),
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
+        AuthorizationUrlOptions {
+            state: Some("xyz123".into()),
+            ..no_options()
+        },
     )
     .unwrap();
     assert!(url.contains("state=xyz123"), "url: {url}");
@@ -148,13 +151,11 @@ fn build_authorization_url_maps_s256_code_challenge_method() {
         "https://app/cb".into(),
         "openid".into(),
         "code".into(),
-        None,
-        None,
-        None,
-        Some("challenge_value".into()),
-        Some(CodeChallengeMethod::S256),
-        None,
-        None,
+        AuthorizationUrlOptions {
+            code_challenge: Some("challenge_value".into()),
+            code_challenge_method: Some(CodeChallengeMethod::S256),
+            ..no_options()
+        },
     )
     .unwrap();
     assert!(url.contains("code_challenge_method=S256"), "url: {url}");
@@ -168,13 +169,11 @@ fn build_authorization_url_maps_plain_code_challenge_method() {
         "https://app/cb".into(),
         "openid".into(),
         "code".into(),
-        None,
-        None,
-        None,
-        Some("challenge_value".into()),
-        Some(CodeChallengeMethod::Plain),
-        None,
-        None,
+        AuthorizationUrlOptions {
+            code_challenge: Some("challenge_value".into()),
+            code_challenge_method: Some(CodeChallengeMethod::Plain),
+            ..no_options()
+        },
     )
     .unwrap();
     assert!(url.contains("code_challenge_method=plain"), "url: {url}");

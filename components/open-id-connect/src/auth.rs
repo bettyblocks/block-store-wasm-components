@@ -1,77 +1,73 @@
+use crate::betty_blocks::open_id_connect::types::{
+    ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
+    TokenResponse, UserInfo,
+};
 use crate::client::{get_json, post_form, post_form_empty};
 use crate::convert::{
     json_to_device_auth_response, json_to_discovery, json_to_jwks, json_to_token_response,
     json_to_user_info,
 };
-use crate::betty_blocks::open_id_connect::types::{
-    ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
-    TokenResponse, UserInfo,
-};
 use crate::params::build_query_string;
 
-// ---------------------------------------------------------------------------
-// Implementations
-// ---------------------------------------------------------------------------
+pub struct AuthorizationUrlOptions {
+    pub state: Option<String>,
+    pub nonce: Option<String>,
+    pub response_mode: Option<String>,
+    pub code_challenge: Option<String>,
+    pub code_challenge_method: Option<CodeChallengeMethod>,
+    pub login_hint: Option<String>,
+    pub prompt: Option<String>,
+}
 
-/// Pure URL construction — no HTTP.
-#[allow(clippy::too_many_arguments)]
 pub fn build_authorization_url(
     authorization_endpoint: String,
     client_id: String,
     redirect_uri: String,
     scope: String,
     response_type: String,
-    state: Option<String>,
-    nonce: Option<String>,
-    response_mode: Option<String>,
-    code_challenge: Option<String>,
-    code_challenge_method: Option<CodeChallengeMethod>,
-    login_hint: Option<String>,
-    prompt: Option<String>,
+    options: AuthorizationUrlOptions,
 ) -> Result<String, ApiError> {
     let scope_str = scope
         .split(',')
         .map(str::trim)
         .collect::<Vec<_>>()
         .join(" ");
-    let mut params: Vec<(&str, String)> = vec![
-        ("client_id", client_id),
-        ("redirect_uri", redirect_uri),
-        ("scope", scope_str),
-        ("response_type", response_type),
+
+    let mut params: Vec<(&str, &str)> = vec![
+        ("client_id", &client_id),
+        ("redirect_uri", &redirect_uri),
+        ("scope", &scope_str),
+        ("response_type", &response_type),
     ];
 
-    if let Some(v) = state {
+    if let Some(ref v) = options.state {
         params.push(("state", v));
     }
-    if let Some(v) = nonce {
+    if let Some(ref v) = options.nonce {
         params.push(("nonce", v));
     }
-    if let Some(v) = response_mode {
+    if let Some(ref v) = options.response_mode {
         params.push(("response_mode", v));
     }
-    if let Some(v) = code_challenge {
+    if let Some(ref v) = options.code_challenge {
         params.push(("code_challenge", v));
     }
-    if let Some(m) = code_challenge_method {
-        let method = match m {
-            CodeChallengeMethod::Plain => "plain".to_string(),
-            CodeChallengeMethod::S256 => "S256".to_string(),
-        };
-        params.push(("code_challenge_method", method));
+    match options.code_challenge_method {
+        Some(CodeChallengeMethod::Plain) => params.push(("code_challenge_method", "plain")),
+        Some(CodeChallengeMethod::S256) => params.push(("code_challenge_method", "S256")),
+        None => {}
     }
-    if let Some(v) = login_hint {
+    if let Some(ref v) = options.login_hint {
         params.push(("login_hint", v));
     }
-    if let Some(v) = prompt {
+    if let Some(ref v) = options.prompt {
         params.push(("prompt", v));
     }
 
-    let pairs: Vec<(&str, &str)> = params.iter().map(|(k, v)| (*k, v.as_str())).collect();
     Ok(format!(
         "{}?{}",
         authorization_endpoint,
-        build_query_string(&pairs)
+        build_query_string(&params)
     ))
 }
 
@@ -90,10 +86,8 @@ pub fn exchange_code(
         ("code", &code),
         ("redirect_uri", &redirect_uri),
     ];
-    let verifier_owned;
     if let Some(ref v) = code_verifier {
-        verifier_owned = v.clone();
-        params.push(("code_verifier", &verifier_owned));
+        params.push(("code_verifier", v));
     }
     let v = post_form(&token_endpoint, &params)?;
     Ok(json_to_token_response(&v))
@@ -164,10 +158,8 @@ pub fn poll_device_token(
         ("client_id", &client_id),
         ("device_code", &device_code),
     ];
-    let secret_owned;
     if let Some(ref s) = client_secret {
-        secret_owned = s.clone();
-        params.push(("client_secret", &secret_owned));
+        params.push(("client_secret", s));
     }
     let v = post_form(&token_endpoint, &params)?;
     Ok(json_to_token_response(&v))

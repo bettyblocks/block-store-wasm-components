@@ -11,11 +11,11 @@ mod params;
 #[cfg(test)]
 mod tests;
 
-use exports::betty_blocks::open_id_connect::oidc_client::Guest;
 use betty_blocks::open_id_connect::types::{
     ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
     TokenResponse, UserInfo,
 };
+use exports::betty_blocks::open_id_connect::oidc_client::Guest;
 
 struct Component;
 
@@ -42,13 +42,15 @@ impl Guest for Component {
             redirect_uri,
             scope,
             response_type,
-            state,
-            nonce,
-            response_mode,
-            code_challenge,
-            code_challenge_method,
-            login_hint,
-            prompt,
+            auth::AuthorizationUrlOptions {
+                state,
+                nonce,
+                response_mode,
+                code_challenge,
+                code_challenge_method,
+                login_hint,
+                prompt,
+            },
         )
     }
 
