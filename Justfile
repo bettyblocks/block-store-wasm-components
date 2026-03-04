@@ -1,8 +1,12 @@
 propagate-workspace-justfiles:
 	#!/usr/bin/env bash
 	for working_directory in $(just index); do
-		echo "--- Copying Justfile to $working_directory ---"
-		(cp workspace-justfile "$working_directory/Justfile")
+		if [ -f "$working_directory/Justfile" ]; then
+			echo "--- Skipping $working_directory (Justfile already exists) ---"
+		else
+			echo "--- Copying Justfile to $working_directory ---"
+			(cp workspace-justfile "$working_directory/Justfile")
+		fi
 	done
 
 build: build-all
@@ -44,4 +48,4 @@ run-just-command-all command_name: propagate-workspace-justfiles
 	done
 
 index:
-	find components -type f -name "Cargo.toml" ! -path "*/open-id-connect/*" -exec dirname {} \;
+	find components -type f -name "Cargo.toml" -exec dirname {} \;

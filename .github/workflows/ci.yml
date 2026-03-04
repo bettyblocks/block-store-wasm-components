@@ -50,23 +50,17 @@ jobs:
           cache: true
 
       - name: "formatting-check"
-        run: |
-          RUSTFLAGS="--deny warnings" just format-check
-          RUSTFLAGS="--deny warnings" cargo fmt --check --manifest-path components/open-id-connect/Cargo.toml
+        run: RUSTFLAGS="--deny warnings" just format-check
 
       - name: "compile-check"
         # Makes warnings be treated as errors (be output to STDERR), so that the pipeline can pick up on warnings.
         run: RUSTFLAGS="--deny warnings" just build
 
       - name: "quality-check"
-        run: |
-          RUSTFLAGS="--deny warnings" just quality-check
-          RUSTFLAGS="--deny warnings" cargo clippy --manifest-path components/open-id-connect/Cargo.toml
+        run: RUSTFLAGS="--deny warnings" just quality-check
 
       - name: "test-check"
-        run: |
-          RUSTFLAGS="--deny warnings" just test
-          RUSTFLAGS="--deny warnings" cargo test --manifest-path components/open-id-connect/Cargo.toml
+        run: RUSTFLAGS="--deny warnings" just test
 
       - name: "integration-tests"
         run: just integration-test
