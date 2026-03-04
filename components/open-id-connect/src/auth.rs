@@ -4,8 +4,7 @@ use crate::betty_blocks::open_id_connect::types::{
 };
 use crate::client::{get_json, post_form, post_form_empty};
 use crate::convert::{
-    json_to_device_auth_response, json_to_discovery, json_to_jwks, json_to_token_response,
-    json_to_user_info,
+    DeviceAuthResponseDe, DiscoveryDocumentDe, JwksDe, TokenResponseDe, UserInfoDe,
 };
 use crate::params::build_query_string;
 
@@ -89,8 +88,7 @@ pub fn exchange_code(
     if let Some(ref v) = code_verifier {
         params.push(("code_verifier", v));
     }
-    let v = post_form(&token_endpoint, &params)?;
-    Ok(json_to_token_response(&v))
+    Ok(post_form::<TokenResponseDe>(&token_endpoint, &params)?.into())
 }
 
 pub fn refresh_access_token(
@@ -99,7 +97,7 @@ pub fn refresh_access_token(
     client_secret: String,
     refresh_token: String,
 ) -> Result<TokenResponse, ApiError> {
-    let v = post_form(
+    Ok(post_form::<TokenResponseDe>(
         &token_endpoint,
         &[
             ("grant_type", "refresh_token"),
@@ -107,22 +105,22 @@ pub fn refresh_access_token(
             ("client_secret", &client_secret),
             ("refresh_token", &refresh_token),
         ],
-    )?;
-    Ok(json_to_token_response(&v))
+    )?
+    .into())
 }
 
 pub fn exchange_jwt_bearer(
     token_endpoint: String,
     assertion: String,
 ) -> Result<TokenResponse, ApiError> {
-    let v = post_form(
+    Ok(post_form::<TokenResponseDe>(
         &token_endpoint,
         &[
             ("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"),
             ("assertion", &assertion),
         ],
-    )?;
-    Ok(json_to_token_response(&v))
+    )?
+    .into())
 }
 
 pub fn initiate_device_auth(
@@ -135,11 +133,11 @@ pub fn initiate_device_auth(
         .map(str::trim)
         .collect::<Vec<_>>()
         .join(" ");
-    let v = post_form(
+    Ok(post_form::<DeviceAuthResponseDe>(
         &device_authorization_endpoint,
         &[("client_id", &client_id), ("scope", &scope_str)],
-    )?;
-    Ok(json_to_device_auth_response(&v))
+    )?
+    .into())
 }
 
 pub fn poll_device_token(
@@ -156,13 +154,11 @@ pub fn poll_device_token(
     if let Some(ref s) = client_secret {
         params.push(("client_secret", s));
     }
-    let v = post_form(&token_endpoint, &params)?;
-    Ok(json_to_token_response(&v))
+    Ok(post_form::<TokenResponseDe>(&token_endpoint, &params)?.into())
 }
 
 pub fn get_userinfo(userinfo_endpoint: String, access_token: String) -> Result<UserInfo, ApiError> {
-    let v = get_json(&userinfo_endpoint, Some(&access_token))?;
-    Ok(json_to_user_info(&v))
+    Ok(get_json::<UserInfoDe>(&userinfo_endpoint, Some(&access_token))?.into())
 }
 
 pub fn revoke_token(revocation_endpoint: String, token: String) -> Result<(), ApiError> {
@@ -170,11 +166,9 @@ pub fn revoke_token(revocation_endpoint: String, token: String) -> Result<(), Ap
 }
 
 pub fn get_jwks(jwks_uri: String) -> Result<Jwks, ApiError> {
-    let v = get_json(&jwks_uri, None)?;
-    Ok(json_to_jwks(&v))
+    Ok(get_json::<JwksDe>(&jwks_uri, None)?.into())
 }
 
 pub fn get_discovery(url: String) -> Result<DiscoveryDocument, ApiError> {
-    let v = get_json(&url, None)?;
-    Ok(json_to_discovery(&v))
+    Ok(get_json::<DiscoveryDocumentDe>(&url, None)?.into())
 }

@@ -1,5 +1,3 @@
-use serde_json::Value;
-
 use crate::betty_blocks::open_id_connect::types::{ApiError, ServerErrorBody};
 use crate::params::build_query_string;
 use crate::wasi::http::outgoing_handler;
@@ -59,6 +57,19 @@ fn read_body(body: crate::wasi::http::types::IncomingBody) -> Result<Vec<u8>, Ap
     Ok(buf)
 }
 
+/// Deserialization target for RFC 6749 §5.2 error responses.
+#[derive(serde::Deserialize)]
+struct OAuthError {
+    #[serde(default = "default_server_error")]
+    error: String,
+    error_description: Option<String>,
+    error_uri: Option<String>,
+}
+
+fn default_server_error() -> String {
+    "server_error".to_string()
+}
+
 fn send(request: OutgoingRequest) -> Result<Vec<u8>, ApiError> {
     let opts = RequestOptions::new();
     let future = outgoing_handler::handle(request, Some(opts))
@@ -83,11 +94,11 @@ fn send(request: OutgoingRequest) -> Result<Vec<u8>, ApiError> {
     if status == 200 || status == 201 {
         Ok(bytes)
     } else {
-        if let Ok(v) = serde_json::from_slice::<Value>(&bytes) {
+        if let Ok(err) = serde_json::from_slice::<OAuthError>(&bytes) {
             Err(ApiError::ServerError(ServerErrorBody {
-                error: v["error"].as_str().unwrap_or("server_error").to_string(),
-                error_description: v["error_description"].as_str().map(str::to_string),
-                error_uri: v["error_uri"].as_str().map(str::to_string),
+                error: err.error,
+                error_description: err.error_description,
+                error_uri: err.error_uri,
             }))
         } else {
             Err(ApiError::HttpError(format!(
@@ -146,16 +157,22 @@ fn post_form_bytes(url: &str, params: &[(&str, &str)]) -> Result<Vec<u8>, ApiErr
     send(req)
 }
 
-pub fn post_form(url: &str, params: &[(&str, &str)]) -> Result<Value, ApiError> {
+pub fn post_form<T: for<'de> serde::Deserialize<'de>>(
+    url: &str,
+    params: &[(&str, &str)],
+) -> Result<T, ApiError> {
     let bytes = post_form_bytes(url, params)?;
-    serde_json::from_slice::<Value>(&bytes).map_err(|e| ApiError::ParseError(e.to_string()))
+    serde_json::from_slice(&bytes).map_err(|e| ApiError::ParseError(e.to_string()))
 }
 
 pub fn post_form_empty(url: &str, params: &[(&str, &str)]) -> Result<(), ApiError> {
     post_form_bytes(url, params).map(|_| ())
 }
 
-pub fn get_json(url: &str, bearer: Option<&str>) -> Result<Value, ApiError> {
+pub fn get_json<T: for<'de> serde::Deserialize<'de>>(
+    url: &str,
+    bearer: Option<&str>,
+) -> Result<T, ApiError> {
     let parsed = ParsedUrl::parse(url)?;
 
     let headers = Fields::new();
@@ -176,5 +193,5 @@ pub fn get_json(url: &str, bearer: Option<&str>) -> Result<Value, ApiError> {
         .expect("path should be settable before the request is sent");
 
     let bytes = send(req)?;
-    serde_json::from_slice::<Value>(&bytes).map_err(|e| ApiError::ParseError(e.to_string()))
+    serde_json::from_slice(&bytes).map_err(|e| ApiError::ParseError(e.to_string()))
 }

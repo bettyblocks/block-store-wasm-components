@@ -1,110 +1,190 @@
-use serde_json::Value;
+use serde::Deserialize;
 
 use crate::betty_blocks::open_id_connect::types::{
     DeviceAuthResponse, DiscoveryDocument, Jwk, Jwks, TokenResponse, UserInfo,
 };
 
-fn opt_str(v: &Value, key: &str) -> Option<String> {
-    v[key].as_str().map(String::from)
-}
-
-fn opt_bool(v: &Value, key: &str) -> Option<bool> {
-    v[key].as_bool()
-}
-
-fn opt_u32(v: &Value, key: &str) -> Option<u32> {
-    v[key].as_u64().map(|n| n as u32)
-}
-
-fn u32_field(v: &Value, key: &str) -> u32 {
-    v[key].as_u64().unwrap_or(0) as u32
-}
-
-fn str_list(v: &Value, key: &str) -> Vec<String> {
-    v[key]
-        .as_array()
-        .map(|a| {
-            a.iter()
-                .filter_map(|x| x.as_str().map(String::from))
-                .collect()
-        })
-        .unwrap_or_default()
+fn default_bearer() -> String {
+    "Bearer".to_string()
 }
 
 // ---------------------------------------------------------------------------
+// TokenResponse
+// ---------------------------------------------------------------------------
 
-pub fn json_to_token_response(v: &Value) -> TokenResponse {
-    TokenResponse {
-        access_token: opt_str(v, "access_token").unwrap_or_default(),
-        token_type: opt_str(v, "token_type").unwrap_or_else(|| "Bearer".to_string()),
-        expires_in: opt_u32(v, "expires_in"),
-        refresh_token: opt_str(v, "refresh_token"),
-        scope: opt_str(v, "scope"),
-        id_token: opt_str(v, "id_token"),
+#[derive(Deserialize)]
+pub struct TokenResponseDe {
+    pub access_token: String,
+    #[serde(default = "default_bearer")]
+    pub token_type: String,
+    pub expires_in: Option<u32>,
+    pub refresh_token: Option<String>,
+    pub scope: Option<String>,
+    pub id_token: Option<String>,
+}
+
+impl From<TokenResponseDe> for TokenResponse {
+    fn from(d: TokenResponseDe) -> Self {
+        TokenResponse {
+            access_token: d.access_token,
+            token_type: d.token_type,
+            expires_in: d.expires_in,
+            refresh_token: d.refresh_token,
+            scope: d.scope,
+            id_token: d.id_token,
+        }
     }
 }
 
-pub fn json_to_device_auth_response(v: &Value) -> DeviceAuthResponse {
-    DeviceAuthResponse {
-        device_code: opt_str(v, "device_code").unwrap_or_default(),
-        user_code: opt_str(v, "user_code").unwrap_or_default(),
-        verification_uri: opt_str(v, "verification_uri")
-            .or_else(|| opt_str(v, "verification_url"))
-            .unwrap_or_default(),
-        verification_uri_complete: opt_str(v, "verification_url_complete")
-            .or_else(|| opt_str(v, "verification_uri_complete")),
-        expires_in: u32_field(v, "expires_in"),
-        interval: u32_field(v, "interval"),
+// ---------------------------------------------------------------------------
+// DeviceAuthResponse
+// ---------------------------------------------------------------------------
+
+#[derive(Deserialize)]
+pub struct DeviceAuthResponseDe {
+    pub device_code: String,
+    pub user_code: String,
+    /// Accepts either the RFC 8628 name (`verification_uri`) or the older
+    /// Google-style alias (`verification_url`).
+    #[serde(alias = "verification_url")]
+    pub verification_uri: String,
+    #[serde(alias = "verification_url_complete")]
+    pub verification_uri_complete: Option<String>,
+    pub expires_in: u32,
+    #[serde(default)]
+    pub interval: u32,
+}
+
+impl From<DeviceAuthResponseDe> for DeviceAuthResponse {
+    fn from(d: DeviceAuthResponseDe) -> Self {
+        DeviceAuthResponse {
+            device_code: d.device_code,
+            user_code: d.user_code,
+            verification_uri: d.verification_uri,
+            verification_uri_complete: d.verification_uri_complete,
+            expires_in: d.expires_in,
+            interval: d.interval,
+        }
     }
 }
 
-pub fn json_to_user_info(v: &Value) -> UserInfo {
-    UserInfo {
-        sub: opt_str(v, "sub").unwrap_or_default(),
-        name: opt_str(v, "name"),
-        given_name: opt_str(v, "given_name"),
-        family_name: opt_str(v, "family_name"),
-        picture: opt_str(v, "picture"),
-        email: opt_str(v, "email"),
-        email_verified: opt_bool(v, "email_verified"),
-        locale: opt_str(v, "locale"),
+// ---------------------------------------------------------------------------
+// UserInfo
+// ---------------------------------------------------------------------------
+
+#[derive(Deserialize)]
+pub struct UserInfoDe {
+    pub sub: String,
+    pub name: Option<String>,
+    pub given_name: Option<String>,
+    pub family_name: Option<String>,
+    pub picture: Option<String>,
+    pub email: Option<String>,
+    pub email_verified: Option<bool>,
+    pub locale: Option<String>,
+}
+
+impl From<UserInfoDe> for UserInfo {
+    fn from(d: UserInfoDe) -> Self {
+        UserInfo {
+            sub: d.sub,
+            name: d.name,
+            given_name: d.given_name,
+            family_name: d.family_name,
+            picture: d.picture,
+            email: d.email,
+            email_verified: d.email_verified,
+            locale: d.locale,
+        }
     }
 }
 
-pub fn json_to_jwk(v: &Value) -> Jwk {
-    Jwk {
-        kty: opt_str(v, "kty").unwrap_or_default(),
-        key_use: opt_str(v, "use"),
-        n: opt_str(v, "n"),
-        e: opt_str(v, "e"),
-        alg: opt_str(v, "alg"),
-        kid: opt_str(v, "kid"),
-        x5t: opt_str(v, "x5t"),
-        x5c: str_list(v, "x5c"),
+// ---------------------------------------------------------------------------
+// Jwk / Jwks
+// ---------------------------------------------------------------------------
+
+#[derive(Deserialize)]
+pub struct JwkDe {
+    pub kty: String,
+    #[serde(rename = "use")]
+    pub key_use: Option<String>,
+    pub n: Option<String>,
+    pub e: Option<String>,
+    pub alg: Option<String>,
+    pub kid: Option<String>,
+    pub x5t: Option<String>,
+    #[serde(default)]
+    pub x5c: Vec<String>,
+}
+
+impl From<JwkDe> for Jwk {
+    fn from(d: JwkDe) -> Self {
+        Jwk {
+            kty: d.kty,
+            key_use: d.key_use,
+            n: d.n,
+            e: d.e,
+            alg: d.alg,
+            kid: d.kid,
+            x5t: d.x5t,
+            x5c: d.x5c,
+        }
     }
 }
 
-pub fn json_to_jwks(v: &Value) -> Jwks {
-    let keys = v["keys"]
-        .as_array()
-        .map(|a| a.iter().map(json_to_jwk).collect())
-        .unwrap_or_default();
-    Jwks { keys }
+#[derive(Deserialize)]
+pub struct JwksDe {
+    pub keys: Vec<JwkDe>,
 }
 
-pub fn json_to_discovery(v: &Value) -> DiscoveryDocument {
-    DiscoveryDocument {
-        issuer: opt_str(v, "issuer").unwrap_or_default(),
-        authorization_endpoint: opt_str(v, "authorization_endpoint").unwrap_or_default(),
-        device_authorization_endpoint: opt_str(v, "device_authorization_endpoint"),
-        token_endpoint: opt_str(v, "token_endpoint").unwrap_or_default(),
-        userinfo_endpoint: opt_str(v, "userinfo_endpoint"),
-        revocation_endpoint: opt_str(v, "revocation_endpoint"),
-        jwks_uri: opt_str(v, "jwks_uri").unwrap_or_default(),
-        scopes_supported: str_list(v, "scopes_supported"),
-        response_types_supported: str_list(v, "response_types_supported"),
-        grant_types_supported: str_list(v, "grant_types_supported"),
-        claims_supported: str_list(v, "claims_supported"),
-        code_challenge_methods_supported: str_list(v, "code_challenge_methods_supported"),
+impl From<JwksDe> for Jwks {
+    fn from(d: JwksDe) -> Self {
+        Jwks {
+            keys: d.keys.into_iter().map(Jwk::from).collect(),
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DiscoveryDocument
+// ---------------------------------------------------------------------------
+
+#[derive(Deserialize)]
+pub struct DiscoveryDocumentDe {
+    pub issuer: String,
+    pub authorization_endpoint: String,
+    pub device_authorization_endpoint: Option<String>,
+    pub token_endpoint: String,
+    pub userinfo_endpoint: Option<String>,
+    pub revocation_endpoint: Option<String>,
+    pub jwks_uri: String,
+    #[serde(default)]
+    pub scopes_supported: Vec<String>,
+    #[serde(default)]
+    pub response_types_supported: Vec<String>,
+    #[serde(default)]
+    pub grant_types_supported: Vec<String>,
+    #[serde(default)]
+    pub claims_supported: Vec<String>,
+    #[serde(default)]
+    pub code_challenge_methods_supported: Vec<String>,
+}
+
+impl From<DiscoveryDocumentDe> for DiscoveryDocument {
+    fn from(d: DiscoveryDocumentDe) -> Self {
+        DiscoveryDocument {
+            issuer: d.issuer,
+            authorization_endpoint: d.authorization_endpoint,
+            device_authorization_endpoint: d.device_authorization_endpoint,
+            token_endpoint: d.token_endpoint,
+            userinfo_endpoint: d.userinfo_endpoint,
+            revocation_endpoint: d.revocation_endpoint,
+            jwks_uri: d.jwks_uri,
+            scopes_supported: d.scopes_supported,
+            response_types_supported: d.response_types_supported,
+            grant_types_supported: d.grant_types_supported,
+            claims_supported: d.claims_supported,
+            code_challenge_methods_supported: d.code_challenge_methods_supported,
+        }
     }
 }
