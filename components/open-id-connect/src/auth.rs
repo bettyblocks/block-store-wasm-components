@@ -3,7 +3,7 @@ use crate::convert::{
     json_to_device_auth_response, json_to_discovery, json_to_jwks, json_to_token_response,
     json_to_user_info,
 };
-use crate::oidc::client::types::{
+use crate::betty_blocks::open_id_connect::types::{
     ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
     TokenResponse, UserInfo,
 };

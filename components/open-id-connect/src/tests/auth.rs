@@ -1,5 +1,5 @@
 use crate::auth::build_authorization_url;
-use crate::oidc::client::types::CodeChallengeMethod;
+use crate::betty_blocks::open_id_connect::types::CodeChallengeMethod;
 
 fn build_url(
     endpoint: &str,

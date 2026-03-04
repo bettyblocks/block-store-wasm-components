@@ -11,8 +11,8 @@ mod params;
 #[cfg(test)]
 mod tests;
 
-use exports::oidc::client::oidc_client::Guest;
-use oidc::client::types::{
+use exports::betty_blocks::open_id_connect::oidc_client::Guest;
+use betty_blocks::open_id_connect::types::{
     ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
     TokenResponse, UserInfo,
 };

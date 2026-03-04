@@ -1,6 +1,6 @@
 use serde_json::Value;
 
-use crate::oidc::client::types::ApiError;
+use crate::betty_blocks::open_id_connect::types::ApiError;
 use crate::params::build_query_string;
 
 // ---------------------------------------------------------------------------

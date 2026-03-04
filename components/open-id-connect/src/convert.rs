@@ -1,6 +1,6 @@
 use serde_json::Value;
 
-use crate::oidc::client::types::{
+use crate::betty_blocks::open_id_connect::types::{
     DeviceAuthResponse, DiscoveryDocument, Jwk, Jwks, TokenResponse, UserInfo,
 };
 
