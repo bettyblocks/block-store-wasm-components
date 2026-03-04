@@ -31,12 +31,6 @@ interface types {
     id-token: option<string>,
   }
 
-  /// Flat result for exchange-jwt-bearer — one of %response or %error is set.
-  record bearer-token-result {
-    response: option<token-response>,
-    error: option<api-error>,
-  }
-
   record device-auth-response {
     device-code: string,
     user-code: string,
@@ -99,7 +93,6 @@ interface oidc-client {
     api-error,
     code-challenge-method,
     token-response,
-    bearer-token-result,
     device-auth-response,
     user-info,
     jwks,
@@ -144,7 +137,7 @@ interface oidc-client {
   exchange-jwt-bearer: func(
     token-endpoint: string,
     assertion: string,
-  ) -> bearer-token-result;
+  ) -> result<token-response, api-error>;
 
   /// Start a device authorization flow (RFC 8628 §3.1).
   initiate-device-auth: func(

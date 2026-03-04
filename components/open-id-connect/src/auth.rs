@@ -1,6 +1,6 @@
 use crate::betty_blocks::open_id_connect::types::{
-    ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
-    TokenResponse, UserInfo,
+    ApiError, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks, TokenResponse,
+    UserInfo,
 };
 use crate::client::{get_json, post_form, post_form_empty};
 use crate::convert::{
@@ -111,23 +111,18 @@ pub fn refresh_access_token(
     Ok(json_to_token_response(&v))
 }
 
-pub fn exchange_jwt_bearer(token_endpoint: String, assertion: String) -> BearerTokenResult {
-    match post_form(
+pub fn exchange_jwt_bearer(
+    token_endpoint: String,
+    assertion: String,
+) -> Result<TokenResponse, ApiError> {
+    let v = post_form(
         &token_endpoint,
         &[
             ("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"),
             ("assertion", &assertion),
         ],
-    ) {
-        Ok(v) => BearerTokenResult {
-            response: Some(json_to_token_response(&v)),
-            error: None,
-        },
-        Err(e) => BearerTokenResult {
-            response: None,
-            error: Some(e),
-        },
-    }
+    )?;
+    Ok(json_to_token_response(&v))
 }
 
 pub fn initiate_device_auth(

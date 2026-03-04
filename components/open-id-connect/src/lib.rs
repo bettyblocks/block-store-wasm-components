@@ -12,8 +12,8 @@ mod params;
 mod tests;
 
 use betty_blocks::open_id_connect::types::{
-    ApiError, BearerTokenResult, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks,
-    TokenResponse, UserInfo,
+    ApiError, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks, TokenResponse,
+    UserInfo,
 };
 use exports::betty_blocks::open_id_connect::oidc_client::Guest;
 
@@ -81,7 +81,10 @@ impl Guest for Component {
         auth::refresh_access_token(token_endpoint, client_id, client_secret, refresh_token)
     }
 
-    fn exchange_jwt_bearer(token_endpoint: String, assertion: String) -> BearerTokenResult {
+    fn exchange_jwt_bearer(
+        token_endpoint: String,
+        assertion: String,
+    ) -> Result<TokenResponse, ApiError> {
         auth::exchange_jwt_bearer(token_endpoint, assertion)
     }
 
