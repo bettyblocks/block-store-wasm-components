@@ -1,0 +1,188 @@
+/// OpenID Connect / OAuth 2.0 client (RFC 6749, RFC 8628, OIDC Core 1.0).
+///
+/// All endpoint URLs are caller-supplied — typically sourced from a
+/// discovery document fetched via `get-discovery`.
+
+package betty-blocks:open-id-connect@1.0.0;
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+interface types {
+
+  /// Holds the full OAuth/OIDC error response body (RFC 6749 §5.2).
+  record server-error-body {
+    error: string,
+    error-description: option<string>,
+    error-uri: option<string>,
+  }
+
+  variant api-error {
+    /// Network or HTTP transport error.
+    http-error(string),
+    /// OAuth/OIDC server returned an error response (RFC 6749 §5.2).
+    server-error(server-error-body),
+    /// Response body could not be parsed as valid JSON.
+    parse-error(string),
+    /// URL has an unsupported or missing scheme.
+    invalid-url(string),
+  }
+
+  enum code-challenge-method {
+    plain,
+    s256,
+  }
+
+  record token-response {
+    access-token: string,
+    token-type: string,
+    expires-in: option<u32>,
+    refresh-token: option<string>,
+    scope: option<string>,
+    id-token: option<string>,
+  }
+
+  record device-auth-response {
+    device-code: string,
+    user-code: string,
+    verification-uri: string,
+    verification-uri-complete: option<string>,
+    expires-in: u32,
+    interval: u32,
+  }
+
+  /// Standard OIDC UserInfo claims (OIDC Core §5.1).
+  record user-info {
+    sub: string,
+    name: option<string>,
+    given-name: option<string>,
+    family-name: option<string>,
+    picture: option<string>,
+    email: option<string>,
+    email-verified: option<bool>,
+    locale: option<string>,
+  }
+
+  record jwk {
+    kty: string,
+    key-use: option<string>,
+    n: option<string>,
+    e: option<string>,
+    alg: option<string>,
+    kid: option<string>,
+    x5t: option<string>,
+    x5c: list<string>,
+  }
+
+  record jwks {
+    keys: list<jwk>,
+  }
+
+  /// OpenID Provider metadata (OIDC Discovery 1.0 §3).
+  record discovery-document {
+    issuer: string,
+    authorization-endpoint: string,
+    device-authorization-endpoint: option<string>,
+    token-endpoint: string,
+    userinfo-endpoint: option<string>,
+    revocation-endpoint: option<string>,
+    jwks-uri: string,
+    scopes-supported: list<string>,
+    response-types-supported: list<string>,
+    grant-types-supported: list<string>,
+    claims-supported: list<string>,
+    code-challenge-methods-supported: list<string>,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Interface
+// ---------------------------------------------------------------------------
+
+interface oidc-client {
+  use types.{
+    api-error,
+    server-error-body,
+    code-challenge-method,
+    token-response,
+    device-auth-response,
+    user-info,
+    jwks,
+    discovery-document,
+  };
+
+  /// Build the authorization redirect URL (RFC 6749 §4.1.1). Pure — no HTTP.
+  build-authorization-url: func(
+    authorization-endpoint: string,
+    client-id: string,
+    redirect-uri: string,
+    scope: string,
+    response-type: string,
+    state: option<string>,
+    nonce: option<string>,
+    response-mode: option<string>,
+    code-challenge: option<string>,
+    code-challenge-method: option<code-challenge-method>,
+    login-hint: option<string>,
+    prompt: option<string>,
+  ) -> result<string, api-error>;
+
+  /// Exchange an authorization code for tokens (RFC 6749 §4.1.3).
+  exchange-code: func(
+    token-endpoint: string,
+    client-id: string,
+    client-secret: string,
+    code: string,
+    redirect-uri: string,
+    code-verifier: option<string>,
+  ) -> result<token-response, api-error>;
+
+  /// Refresh an access token (RFC 6749 §6).
+  refresh-access-token: func(
+    token-endpoint: string,
+    client-id: string,
+    client-secret: string,
+    refresh-token: string,
+  ) -> result<token-response, api-error>;
+
+  /// Exchange a pre-signed JWT bearer assertion for an access token (RFC 7523 §2).
+  exchange-jwt-bearer: func(
+    token-endpoint: string,
+    assertion: string,
+  ) -> result<token-response, api-error>;
+
+  /// Start a device authorization flow (RFC 8628 §3.1).
+  initiate-device-auth: func(
+    device-authorization-endpoint: string,
+    client-id: string,
+    scope: string,
+  ) -> result<device-auth-response, api-error>;
+
+  /// Poll for a device access token (RFC 8628 §3.4).
+  /// Returns "authorization_pending" or "slow_down" until the user completes the flow.
+  poll-device-token: func(
+    token-endpoint: string,
+    client-id: string,
+    client-secret: option<string>,
+    device-code: string,
+  ) -> result<token-response, api-error>;
+
+  get-userinfo: func(userinfo-endpoint: string, access-token: string) -> result<user-info, api-error>;
+
+  revoke-token: func(revocation-endpoint: string, token: string) -> result<_, api-error>;
+
+  get-jwks: func(jwks-uri: string) -> result<jwks, api-error>;
+
+  /// Fetch and parse an OpenID Provider discovery document.
+  get-discovery: func(url: string) -> result<discovery-document, api-error>;
+}
+
+// ---------------------------------------------------------------------------
+// World
+// ---------------------------------------------------------------------------
+
+world oidc-client-world {
+  export oidc-client;
+  import wasi:http/outgoing-handler@0.2.2;
+}

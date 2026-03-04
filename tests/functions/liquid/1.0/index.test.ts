@@ -2,7 +2,7 @@ import { compileComponent } from "../../../compile-component.ts";
 const { test } = Deno;
 import { expect } from "@std/expect";
 
-const wasmPath = "./functions/liquid/1.0/liquid_templating.wasm";
+const wasmPath = "./components/liquid/1.0/liquid_templating.wasm";
 
 const { liquid: { liquid } } = await compileComponent(wasmPath);
 

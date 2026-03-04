@@ -2,7 +2,7 @@ import { compileComponent } from "../../../compile-component.ts";
 const { test } = Deno;
 import { expect } from "@std/expect";
 
-const wasmPath = "./functions/generate-uuid/1.0/generate_uuid.wasm";
+const wasmPath = "./components/generate-uuid/1.0/generate_uuid.wasm";
 
 const { generateUuid: { generateUuid } } = await compileComponent(wasmPath);
 
