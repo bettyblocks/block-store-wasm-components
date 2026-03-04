@@ -1,6 +1,5 @@
 wit_bindgen::generate!({
     world: "oidc-client-world",
-    path: "wit",
     generate_all,
 });
 
