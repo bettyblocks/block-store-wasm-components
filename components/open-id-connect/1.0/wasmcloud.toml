@@ -4,5 +4,5 @@ language = "rust"
 type = "component"
 
 [component]
-wit_world = "oidc-client-world"
+wit_world = "main"
 wasm_target = "wasm32-wasip2"

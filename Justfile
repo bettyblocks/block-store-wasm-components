@@ -1,12 +1,8 @@
 propagate-workspace-justfiles:
 	#!/usr/bin/env bash
 	for working_directory in $(just index); do
-		if [ -f "$working_directory/Justfile" ]; then
-			echo "--- Skipping $working_directory (Justfile already exists) ---"
-		else
-			echo "--- Copying Justfile to $working_directory ---"
-			(cp workspace-justfile "$working_directory/Justfile")
-		fi
+		echo "--- Copying Justfile to $working_directory ---"
+		(cp workspace-justfile "$working_directory/Justfile")
 	done
 
 build: build-all

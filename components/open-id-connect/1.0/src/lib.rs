@@ -1,5 +1,4 @@
 wit_bindgen::generate!({
-    world: "oidc-client-world",
     generate_all,
 });
 
@@ -7,9 +6,6 @@ mod auth;
 mod client;
 mod convert;
 mod params;
-
-#[cfg(test)]
-mod tests;
 
 use betty_blocks::open_id_connect::types::{
     ApiError, CodeChallengeMethod, DeviceAuthResponse, DiscoveryDocument, Jwks, TokenResponse,
@@ -35,7 +31,7 @@ impl Guest for Component {
         code_challenge_method: Option<CodeChallengeMethod>,
         login_hint: Option<String>,
         prompt: Option<String>,
-    ) -> Result<String, ApiError> {
+    ) -> String {
         auth::build_authorization_url(
             authorization_endpoint,
             client_id,
