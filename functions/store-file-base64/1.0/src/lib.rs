@@ -15,7 +15,7 @@ use bindings::{
 
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 
-use crate::download::{make_unique_filename};
+use crate::download::make_unique_filename;
 
 struct Component;
 
@@ -26,8 +26,13 @@ impl StoreGuest for Component {
         property: Property,
         base64_source: Base64Source,
     ) -> Result<String, String> {
-        wstd::runtime::block_on(store_file_internal(helper_context, model, property, base64_source))
-            .map_err(|e| e.to_string())
+        wstd::runtime::block_on(store_file_internal(
+            helper_context,
+            model,
+            property,
+            base64_source,
+        ))
+        .map_err(|e| e.to_string())
     }
 }
 
@@ -46,9 +51,15 @@ async fn store_file_internal(
         .to_string();
     let filename = make_unique_filename(&base64_source.filename);
 
-    let upload_result =
-        upload_file::upload(&helper_context, &model, &property, &file_bytes, &filename, &content_type)
-            .map_err(|e| anyhow::anyhow!("Upload failed: {e}"))?;
+    let upload_result = upload_file::upload(
+        &helper_context,
+        &model,
+        &property,
+        &file_bytes,
+        &filename,
+        &content_type,
+    )
+    .map_err(|e| anyhow::anyhow!("Upload failed: {e}"))?;
 
     Ok(upload_result.reference)
 }
