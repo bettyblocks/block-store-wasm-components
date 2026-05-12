@@ -1,5 +1,3 @@
-pub mod download;
-
 pub mod bindings {
     wit_bindgen::generate!({
         generate_all,
@@ -14,8 +12,6 @@ use bindings::{
 };
 
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
-
-use crate::download::make_unique_filename;
 
 struct Component;
 
@@ -63,5 +59,16 @@ async fn store_file_internal(
 
     Ok(upload_result.reference)
 }
+
+pub fn make_unique_filename(filename: &str) -> String {
+    let random_bytes = crate::bindings::wasi::random::random::get_random_bytes(8);
+    let hex: String = random_bytes.iter().map(|b| format!("{b:02x}")).collect();
+
+    match filename.rsplit_once('.') {
+        Some((stem, ext)) => format!("{stem}_{hex}.{ext}"),
+        None => format!("{filename}_{hex}"),
+    }
+}
+
 
 bindings::export!(Component with_types_in bindings);
