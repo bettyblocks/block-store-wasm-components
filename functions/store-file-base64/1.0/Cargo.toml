@@ -1,12 +1,10 @@
 [package]
 name = "store-file-base64"
-edition = "2021"
+edition = "2024"
 version = "0.1.0"
 
 [lib]
 crate-type = ["cdylib"]
-
-[workspace]
 
 [dependencies]
 anyhow = "1"
