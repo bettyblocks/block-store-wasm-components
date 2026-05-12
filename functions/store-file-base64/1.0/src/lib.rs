@@ -10,7 +10,7 @@ use bindings::{
     betty_blocks::data_api::data_api::HelperContext,
     betty_blocks::file::upload_file,
     betty_blocks::types::types::Property,
-    exports::betty_blocks::file::store::{Base64Source, Guest as StoreGuest, Model},
+    exports::betty_blocks::file::store_base64::{Base64Source, Guest as StoreGuest, Model},
 };
 
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};

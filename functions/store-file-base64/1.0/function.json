@@ -40,9 +40,7 @@
 		{
 			"label": "Source",
 			"meta": {
-				"allowedKinds": [
-					"OBJECT"
-				],
+				"allowedKinds": ["OBJECT"],
 				"schemaModel": "schemaModelBase64Source",
 				"type": "Value",
 				"validations": {
@@ -52,12 +50,12 @@
 			"name": "source"
 		},
 		{
-			"label": "Schema Model store-file-result",
+			"label": "Schema Model Base64 Source",
 			"meta": {
 				"type": "SchemaModel",
 				"visibility": "hidden"
 			},
-			"name": "schemaModelStoreFileResult"
+			"name": "schemaModelBase64Source"
 		},
 		{
 			"label": "Result",

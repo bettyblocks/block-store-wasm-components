@@ -7,5 +7,5 @@ world store-file-base64 {
     import betty-blocks:types/types;
     import betty-blocks:file/upload-file;
 
-    export betty-blocks:file/store;
+    export betty-blocks:file/store-base64;
 }
