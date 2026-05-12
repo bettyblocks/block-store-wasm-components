@@ -13,7 +13,7 @@ use bindings::{
     exports::betty_blocks::file::store_base64::{Base64Source, Guest as StoreGuest, Model},
 };
 
-use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
+use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 
 use crate::download::make_unique_filename;
 
