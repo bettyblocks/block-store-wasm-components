@@ -70,5 +70,4 @@ pub fn make_unique_filename(filename: &str) -> String {
     }
 }
 
-
 bindings::export!(Component with_types_in bindings);
