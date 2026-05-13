@@ -23,30 +23,30 @@ impl StoreGuest for Component {
         filename: String,
         data: String,
     ) -> Result<String, String> {
-    // Our platform passes the property as [{ name: "<propertyName>" }], we have to accommodate
-    // that here.
-    let property = property.first().unwrap();
+        // Our platform passes the property as [{ name: "<propertyName>" }], we have to accommodate
+        // that here.
+        let property = property.first().unwrap();
 
-    let file_bytes = BASE64
-        .decode(&data)
-        .map_err(|e| format!("Failed to decode base64 source: {e}"))?;
+        let file_bytes = BASE64
+            .decode(&data)
+            .map_err(|e| format!("Failed to decode base64 source: {e}"))?;
 
-    let content_type = mime_guess::from_path(&filename)
-        .first_or_octet_stream()
-        .to_string();
-    let unique_filename = make_unique_filename(&filename);
+        let content_type = mime_guess::from_path(&filename)
+            .first_or_octet_stream()
+            .to_string();
+        let unique_filename = make_unique_filename(&filename);
 
-    let upload_result = upload_file::upload(
-        &helper_context,
-        &model,
-        &property,
-        &file_bytes,
-        &unique_filename,
-        &content_type,
-    )
-    .map_err(|e| format!("Upload failed: {e}"))?;
+        let upload_result = upload_file::upload(
+            &helper_context,
+            &model,
+            property,
+            &file_bytes,
+            &unique_filename,
+            &content_type,
+        )
+        .map_err(|e| format!("Upload failed: {e}"))?;
 
-    Ok(upload_result.reference)
+        Ok(upload_result.reference)
     }
 }
 
