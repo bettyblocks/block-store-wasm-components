@@ -29,7 +29,7 @@ impl StoreGuest for Component {
 
         let file_bytes = BASE64
             .decode(&data)
-            .map_err(|e| format!("Failed to decode base64 source: {e}"))?;
+            .map_err(|error| format!("Failed to decode base64 source: {error}"))?;
 
         let content_type = mime_guess::from_path(&filename)
             .first_or_octet_stream()
@@ -44,7 +44,7 @@ impl StoreGuest for Component {
             &unique_filename,
             &content_type,
         )
-        .map_err(|e| format!("Upload failed: {e}"))?;
+        .map_err(|error| format!("Upload failed: {error}"))?;
 
         Ok(upload_result.reference)
     }

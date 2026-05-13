@@ -36,7 +36,7 @@ interface store {
         headers: download-headers,
     }
 
-    store-file: func(helper-context: helper-context, model: model, property: property, source: url-source) -> result<string, string>;
+    store-file: func(helper-context: helper-context, model: model, property: list<property>, source: url-source) -> result<string, string>;
 }
 
 interface store-base64 {
