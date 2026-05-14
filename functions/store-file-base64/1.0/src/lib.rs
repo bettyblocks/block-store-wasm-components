@@ -23,8 +23,6 @@ impl StoreGuest for Component {
         filename: String,
         data: String,
     ) -> Result<String, String> {
-        // Our platform passes the property as [{ name: "<propertyName>" }], we have to accommodate
-        // that here.
         let property = property.first().unwrap();
 
         let file_bytes = BASE64
