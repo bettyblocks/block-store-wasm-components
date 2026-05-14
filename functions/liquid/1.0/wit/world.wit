@@ -12,4 +12,4 @@ interface liquid {
 world main {
     export liquid;
 }
-    
+
