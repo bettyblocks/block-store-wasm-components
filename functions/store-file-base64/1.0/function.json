@@ -38,37 +38,35 @@
       "label": "Property"
     },
     {
-      "label": "Source",
       "meta": {
-        "allowedKinds": ["OBJECT"],
-        "schemaModel": "schemaModelBase64Source",
-        "type": "Value",
+        "type": "Text",
         "validations": {
           "required": true
         }
       },
-      "name": "source"
+      "name": "filename",
+      "label": "Filename"
     },
     {
-      "label": "Schema Model Base64 Source",
       "meta": {
-        "type": "SchemaModel",
-        "visibility": "hidden"
+        "type": "Text",
+        "validations": {
+          "required": true
+        }
       },
-      "name": "schemaModelBase64Source"
+      "name": "data",
+      "label": "Base64 Data"
     },
     {
-      "label": "Result",
       "meta": {
+        "type": "Output",
         "output": {
           "type": "Text"
-        },
-        "type": "Output",
-        "validations": {
-          "required": true
         }
       },
-      "name": "result"
+      "name": "reference",
+      "label": "File reference",
+      "info": "Used to refer to a stored file"
     }
   ],
   "yields": "NONE"
