@@ -23,7 +23,7 @@ impl StoreGuest for Component {
         filename: String,
         data: String,
     ) -> Result<String, String> {
-        let property = property.first().unwrap();
+        let property = property.first().ok_or(String::from("Failed to fetch file property"))?;
 
         let file_bytes = BASE64
             .decode(&data)
