@@ -1,4 +1,4 @@
-package betty-blocks:store-file-base64;
+package betty-blocks:store-file-base64@1.0.0;
 
 world store-file-base64 {
     import wasi:http/outgoing-handler@0.2.0;
