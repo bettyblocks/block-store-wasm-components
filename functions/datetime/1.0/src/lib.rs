@@ -286,4 +286,45 @@ mod tests {
             "1970-03-01T00:00:00+00:00"
         );
     }
+
+    /// Proptests have to be run as unit tests, because integration tests on cdylib crates aren't able to directly interact with the crate.
+    mod proptests {
+        use super::*;
+        use proptest::prelude::*;
+
+        proptest! {
+            #[test]
+            fn change_timezone(tz in "[+-]([01][0-9]|2[0-3]):([0-5][0-9])", dt in "(((2000|2400|2800|((19|2[0-9])(0[48]|[2468][048]|[13579][26])))-02-29)|(((19|2[0-9])[0-9]{2})-02-(0[1-9]|1[0-9]|2[0-8]))|(((19|2[0-9])[0-9]{2})-(0[13578]|10|12)-(0[1-9]|[12][0-9]|3[01]))|(((19|2[0-9])[0-9]{2})-(0[469]|11)-(0[1-9]|[12][0-9]|30)))T([01][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]([+-]([01][0-9]|2[0-3]):([0-5][0-9])|Z)") {
+                Component::change_timezone(dt, tz).unwrap();
+            }
+
+            #[test]
+            fn offset_datetime(oc in -1000000..1000000, os in 0..6, dt in "(((2000|2400|2800|((19|2[0-9])(0[48]|[2468][048]|[13579][26])))-02-29)|(((19|2[0-9])[0-9]{2})-02-(0[1-9]|1[0-9]|2[0-8]))|(((19|2[0-9])[0-9]{2})-(0[13578]|10|12)-(0[1-9]|[12][0-9]|3[01]))|(((19|2[0-9])[0-9]{2})-(0[469]|11)-(0[1-9]|[12][0-9]|30)))T([01][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]([+-]([01][0-9]|2[0-3]):([0-5][0-9])|Z)") {
+                let os = match os {
+                    0 => OffsetSize::Days,
+                    1 => OffsetSize::Hours,
+                    2 => OffsetSize::Minutes,
+                    3 => OffsetSize::Seconds,
+                    4 => OffsetSize::Weeks,
+                    5 => OffsetSize::Months,
+                    _ => OffsetSize::Years,
+                };
+                Component::offset_datetime(dt, oc, os).unwrap();
+            }
+
+            #[test]
+            fn offset_datetime_in_business_days(oc in -1000000..1000000, os in 0..6, dt in "(((2000|2400|2800|((19|2[0-9])(0[48]|[2468][048]|[13579][26])))-02-29)|(((19|2[0-9])[0-9]{2})-02-(0[1-9]|1[0-9]|2[0-8]))|(((19|2[0-9])[0-9]{2})-(0[13578]|10|12)-(0[1-9]|[12][0-9]|3[01]))|(((19|2[0-9])[0-9]{2})-(0[469]|11)-(0[1-9]|[12][0-9]|30)))T([01][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]([+-]([01][0-9]|2[0-3]):([0-5][0-9])|Z)") {
+                let os = match os {
+                    0 => OffsetSize::Days,
+                    1 => OffsetSize::Hours,
+                    2 => OffsetSize::Minutes,
+                    3 => OffsetSize::Seconds,
+                    4 => OffsetSize::Weeks,
+                    5 => OffsetSize::Months,
+                    _ => OffsetSize::Years,
+                };
+                Component::offset_datetime_in_business_days(dt, oc, os).unwrap();
+            }
+        }
+    }
 }
