@@ -20,8 +20,9 @@ impl StoreGuest for Component {
         helper_context: HelperContext,
         model: Model,
         property: Vec<Property>,
-        filename: String,
         data: String,
+        filename: String,
+        file_extension: String,
     ) -> Result<String, String> {
         let property = property
             .first()
@@ -31,17 +32,13 @@ impl StoreGuest for Component {
             .decode(&data)
             .map_err(|error| format!("Failed to decode base64 source: {error}"))?;
 
-        let content_type = mime_guess::from_path(&filename)
-            .first_or_octet_stream()
-            .to_string();
-
         let upload_result = upload_file::upload(
             &helper_context,
             &model,
             property,
             &file_bytes,
             &filename,
-            &content_type,
+            &file_extension,
         )
         .map_err(|error| format!("Upload failed: {error}"))?;
 

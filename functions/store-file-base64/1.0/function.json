@@ -54,6 +54,16 @@
           "required": true
         }
       },
+      "name": "file_extension",
+      "label": "File extension"
+    },
+    {
+      "meta": {
+        "type": "Text",
+        "validations": {
+          "required": true
+        }
+      },
       "name": "data",
       "label": "Base64 Data"
     },
