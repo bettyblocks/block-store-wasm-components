@@ -1,4 +1,4 @@
-package betty-blocks:random-hex;
+package betty-blocks:random-hex@1.0.0;
 
 interface random-hex {
     generate-random-hex: func(size: u32) -> string;
