@@ -1,0 +1,55 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+  REGISTRY: ghcr.io
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: wasm32-wasip2
+          cache-directories: "functions/*/*/target"
+          cache-all-crates: "true"
+
+      - name: Setup wash
+        uses: wasmCloud/setup-wash-action@main
+        with:
+          wash-version: v2.1.0
+
+      - name: Build and push all components
+        run: |
+          for manifest in functions/*/*/Cargo.toml; do
+            component_directory=$(dirname "$manifest")
+            cargo build --release --target wasm32-wasip2 --manifest-path "$manifest"
+          done
+
+      - name: Log in to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push all components to ghcr
+        run: |
+          for manifest in functions/*/*/Cargo.toml; do
+            component_directory=$(dirname "$manifest")
+            package_registry_path="${{ env.REGISTRY }}/$(sed -nE 's/package betty-blocks:([a-z-]+)@([0-9]\.[0-9]\.[0-9]);/betty-blocks\/\1:\2/p' "$component_directory/wit/world.wit")"
+            wash oci push "$package_registry_path" "$component_directory/target/wasm32-wasip2/release/"*.wasm
+          done
