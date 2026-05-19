@@ -1,0 +1,12 @@
+[package]
+name = "store-file-base64"
+edition = "2024"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+base64 = "0.22"
+wit-bindgen = "0.47.0"
+mime_guess = "2.0"

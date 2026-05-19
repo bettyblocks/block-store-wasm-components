@@ -1,0 +1,11 @@
+package betty-blocks:store-file-base64@1.0.0;
+
+world store-file-base64 {
+    import wasi:http/outgoing-handler@0.2.0;
+    import wasi:random/random@0.2.0;
+    import betty-blocks:data-api/data-api;
+    import betty-blocks:types/types;
+    import betty-blocks:file/upload-file;
+
+    export betty-blocks:file/store-base64;
+}

@@ -1,0 +1,73 @@
+{
+  "description": "Uploads a file to the asset store and returns a reference which can be used in a create or update",
+  "label": "Store File Base64",
+  "category": "Misc",
+  "icon": {
+    "name": "UploadIcon",
+    "color": "Orange"
+  },
+  "options": [
+    {
+      "meta": {
+        "type": "Model",
+        "validations": {
+          "required": true
+        }
+      },
+      "name": "model",
+      "label": "Model"
+    },
+    {
+      "meta": {
+        "allowedKinds": ["FILE", "IMAGE"],
+        "type": "Property",
+        "model": "model",
+        "validations": {
+          "required": true
+        }
+      },
+      "configuration": {
+        "dependsOn": [
+          {
+            "option": "model",
+            "action": "CLEAR"
+          }
+        ]
+      },
+      "name": "property",
+      "label": "Property"
+    },
+    {
+      "meta": {
+        "type": "Text",
+        "validations": {
+          "required": true
+        }
+      },
+      "name": "filename",
+      "label": "Filename"
+    },
+    {
+      "meta": {
+        "type": "Text",
+        "validations": {
+          "required": true
+        }
+      },
+      "name": "data",
+      "label": "Base64 Data"
+    },
+    {
+      "meta": {
+        "type": "Output",
+        "output": {
+          "type": "Text"
+        }
+      },
+      "name": "reference",
+      "label": "File reference",
+      "info": "Used to refer to a stored file"
+    }
+  ],
+  "yields": "NONE"
+}
