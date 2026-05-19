@@ -54,6 +54,6 @@ jobs:
         run: |
           for manifest in functions/*/*/Cargo.toml; do
             component_directory=$(dirname "$manifest")
-            package_registry_path="${{ env.REGISTRY }}/$(sed -nE 's/package betty-blocks:([a-z-]+)@([0-9]\.[0-9]\.[0-9]);/bettyblocks\/\1:\2/p' "$component_directory/wit/world.wit")"
+            package_registry_path="${{ env.REGISTRY }}/$(sed -nE 's/package betty-blocks:([a-z0-9-]+)@([0-9]\.[0-9]\.[0-9]);/bettyblocks\/\1:\2/p' "$component_directory/wit/world.wit")"
             wash oci push "$package_registry_path" "$component_directory/"*.wasm
           done
