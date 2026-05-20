@@ -9,4 +9,3 @@ crate-type = ["cdylib"]
 [dependencies]
 base64 = "0.22"
 wit-bindgen = "0.47.0"
-mime_guess = "2.0"
