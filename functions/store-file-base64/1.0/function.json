@@ -64,7 +64,7 @@
           "required": true
         }
       },
-      "name": "file_extension",
+      "name": "file-extension",
       "label": "File extension",
       "info": "The extension of the file is for example JPG. You can use both .jpg or JPG to specify the file extension. Do not use .JPG, as this will make the file extension capitalized." },
     {
