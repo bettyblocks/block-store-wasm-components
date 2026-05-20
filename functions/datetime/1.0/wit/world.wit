@@ -1,17 +1,17 @@
 package betty-blocks:datetime@1.0.0;
 
 interface datetime {
-    /// The ISO string format is used for timestamps
+    /// The RFC3339 string format is used for timestamps
     type timestamp = string;
 
     enum offset-size {
-        %seconds,
-        %minutes,
-        %hours,
-        %days,
-        %weeks,
-        %months,
-        %years,
+        seconds,
+        minutes,
+        hours,
+        days,
+        weeks,
+        months,
+        years,
     }
 
     /// This gets the timestamp for the current moment in UTC.

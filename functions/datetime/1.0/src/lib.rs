@@ -4,6 +4,31 @@ use crate::exports::betty_blocks::datetime::datetime::{Guest, OffsetSize, Timest
 
 wit_bindgen::generate!({ generate_all });
 
+impl std::fmt::Display for OffsetSize {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let size_str = match self {
+            OffsetSize::Seconds => "second",
+            OffsetSize::Minutes => "minute",
+            OffsetSize::Hours => "hour",
+            OffsetSize::Days => "day",
+            OffsetSize::Weeks => "week",
+            OffsetSize::Months => "month",
+            OffsetSize::Years => "year",
+        };
+        write!(f, "{size_str}")
+    }
+}
+
+fn pluralize(str: String, count: i32) -> String {
+    if count.abs() != 1 { str + "s" } else { str }
+}
+
+/**
+TimeDelta only supports offset sizes lower than months.
+This is because weeks and below can be calculated to a specific amount of nanoseconds,
+while months do not always contain the same amount of nanoseconds (february contains less than january, for example).
+Therefore, this is handled separately by the TimeOffset.
+*/
 enum TimeOffset {
     TimeDelta(chrono::TimeDelta),
     Months(i32),
@@ -29,15 +54,11 @@ impl TimeOffset {
         if offset_count < 0 {
             timestamp
                 .checked_sub_months(Months::new(offset_count.unsigned_abs()))
-                .ok_or_else(|| {
-                    String::from("Could not offset the datetime by the specified amount")
-                })
+                .ok_or_else(|| String::from("Could not offset the datetime"))
         } else {
             timestamp
                 .checked_add_months(Months::new(offset_count as u32))
-                .ok_or_else(|| {
-                    String::from("Could not offset the datetime by the specified amount")
-                })
+                .ok_or_else(|| String::from("Could not offset the datetime"))
         }
     }
 
@@ -46,11 +67,9 @@ impl TimeOffset {
         timestamp: chrono::DateTime<FixedOffset>,
     ) -> Result<chrono::DateTime<FixedOffset>, String> {
         match self {
-            Self::TimeDelta(time_delta) => {
-                timestamp.checked_add_signed(*time_delta).ok_or_else(|| {
-                    String::from("Could not offset the datetime by the specified amount")
-                })
-            }
+            Self::TimeDelta(time_delta) => timestamp
+                .checked_add_signed(*time_delta)
+                .ok_or_else(|| String::from("Could not offset the datetime")),
             Self::Months(months) => Self::add_months(timestamp, *months),
         }
     }
@@ -68,9 +87,7 @@ impl TimeOffset {
             let extra_days = amount_of_days / 5 * 2;
             let offset_timestamp = timestamp
                 .checked_add_signed(*time_delta + chrono::TimeDelta::days(extra_days))
-                .ok_or_else(|| {
-                    String::from("Could not offset the datetime by the specified amount")
-                })?;
+                .ok_or_else(|| String::from("Could not offset the datetime"))?;
 
             let offset_timestamp_weekday = offset_timestamp.weekday().num_days_from_monday();
 
@@ -81,9 +98,7 @@ impl TimeOffset {
             {
                 offset_timestamp
                     .checked_add_days(chrono::Days::new(2))
-                    .ok_or_else(|| {
-                        String::from("Could not offset the datetime by the specified amount")
-                    })
+                    .ok_or_else(|| String::from("Could not offset the datetime"))
             } else {
                 Ok(offset_timestamp)
             }
@@ -102,10 +117,10 @@ impl Guest for Component {
 
     fn change_timezone(timestamp: Timestamp, timezone: String) -> Result<Timestamp, String> {
         let timestamp = chrono::DateTime::parse_from_rfc3339(&timestamp)
-            .map_err(|_| String::from("The timestamp is not correctly formatted"))?;
+            .map_err(|_| format!("The timestamp \"{timestamp}\" is not correctly formatted"))?;
         let timezone: FixedOffset = timezone
             .parse()
-            .map_err(|_| String::from("The timezone is not correctly formatted"))?;
+            .map_err(|_| format!("The timezone \"{timezone}\" is not correctly formatted"))?;
 
         Ok(timestamp.with_timezone(&timezone).to_rfc3339())
     }
@@ -116,13 +131,17 @@ impl Guest for Component {
         offset_size: OffsetSize,
     ) -> Result<Timestamp, String> {
         let timestamp = chrono::DateTime::parse_from_rfc3339(&timestamp)
-            .map_err(|_| String::from("The timestamp is not correctly formatted"))?;
+            .map_err(|_| format!("The timestamp \"{timestamp}\" is not correctly formatted"))?;
 
         let time_offset = TimeOffset::new(offset_count, offset_size);
 
-        time_offset
-            .offset_time(timestamp)
-            .map(|offset_timestamp| offset_timestamp.to_rfc3339())
+        match time_offset.offset_time(timestamp) {
+            Ok(offset_timestamp) => Ok(offset_timestamp.to_rfc3339()),
+            Err(error_message) => Err(format!(
+                "{error_message} by {offset_count} {}",
+                pluralize(offset_size.to_string(), offset_count)
+            )),
+        }
     }
 
     fn offset_datetime_in_business_days(
@@ -131,13 +150,17 @@ impl Guest for Component {
         offset_size: OffsetSize,
     ) -> Result<Timestamp, String> {
         let timestamp = chrono::DateTime::parse_from_rfc3339(&timestamp)
-            .map_err(|_| String::from("The timestamp is not correctly formatted"))?;
+            .map_err(|_| format!("The timestamp \"{timestamp}\" is not correctly formatted"))?;
 
         let time_offset = TimeOffset::new(offset_count, offset_size);
 
-        time_offset
-            .offset_time_in_business_days(timestamp, offset_size)
-            .map(|offset_timestamp| offset_timestamp.to_rfc3339())
+        match time_offset.offset_time_in_business_days(timestamp, offset_size) {
+            Ok(offset_timestamp) => Ok(offset_timestamp.to_rfc3339()),
+            Err(error_message) => Err(format!(
+                "{error_message} by {offset_count} {}",
+                pluralize(offset_size.to_string(), offset_count)
+            )),
+        }
     }
 }
 
@@ -152,20 +175,23 @@ mod tests {
     #[test]
     fn change_timezone_with_invalid_timestamp_test() {
         assert_eq!(
-            Component::change_timezone(String::new(), String::from("Z"))
+            Component::change_timezone(String::from("invalid"), String::from("Z"))
                 .unwrap_err()
                 .as_str(),
-            "The timestamp is not correctly formatted"
+            "The timestamp \"invalid\" is not correctly formatted"
         );
     }
 
     #[test]
     fn change_timezone_with_invalid_timezone_test() {
         assert_eq!(
-            Component::change_timezone(String::from("1970-01-02T00:00:00+00:00"), String::new())
-                .unwrap_err()
-                .as_str(),
-            "The timezone is not correctly formatted"
+            Component::change_timezone(
+                String::from("1970-01-02T00:00:00+00:00"),
+                String::from("invalid")
+            )
+            .unwrap_err()
+            .as_str(),
+            "The timezone \"invalid\" is not correctly formatted"
         );
     }
 
@@ -285,6 +311,56 @@ mod tests {
             .as_str(),
             "1970-03-01T00:00:00+00:00"
         );
+    }
+
+    #[test]
+    fn offset_minimum_datatime_errors_test() {
+        assert_eq!(
+            TimeOffset::new(-1, OffsetSize::Seconds)
+                .offset_time(DateTime::<FixedOffset>::MIN_UTC.fixed_offset())
+                .unwrap_err()
+                .as_str(),
+            "Could not offset the datetime"
+        )
+    }
+
+    #[test]
+    fn offset_to_minimum_datatime_works_test() {
+        assert_eq!(
+            TimeOffset::new(-1, OffsetSize::Seconds)
+                .offset_time(
+                    DateTime::<FixedOffset>::MIN_UTC.fixed_offset() + chrono::TimeDelta::seconds(1)
+                )
+                .unwrap()
+                .to_rfc3339()
+                .as_str(),
+            "-262143-01-01T00:00:00+00:00"
+        )
+    }
+
+    #[test]
+    fn offset_to_maximum_datatime_works_test() {
+        assert_eq!(
+            TimeOffset::new(1, OffsetSize::Seconds)
+                .offset_time(
+                    DateTime::<FixedOffset>::MAX_UTC.fixed_offset() - chrono::TimeDelta::seconds(1)
+                )
+                .unwrap()
+                .to_rfc3339()
+                .as_str(),
+            "+262142-12-31T23:59:59.999999999+00:00"
+        )
+    }
+
+    #[test]
+    fn offset_maximum_datatime_errors_test() {
+        assert_eq!(
+            TimeOffset::new(1, OffsetSize::Seconds)
+                .offset_time(DateTime::<FixedOffset>::MAX_UTC.fixed_offset())
+                .unwrap_err()
+                .as_str(),
+            "Could not offset the datetime"
+        )
     }
 
     /// Proptests have to be run as unit tests, because integration tests on cdylib crates aren't able to directly interact with the crate.
