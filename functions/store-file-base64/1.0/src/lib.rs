@@ -39,8 +39,6 @@ impl StoreGuest for Component {
             format!("{filename}.{file_extension}")
         };
 
-        eprintln!("{}", full_filename);
-
         let upload_result = upload_file::upload(
             &helper_context,
             &model,
