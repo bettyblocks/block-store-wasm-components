@@ -24,6 +24,13 @@ impl StoreGuest for Component {
         filename: String,
         file_extension: String,
     ) -> Result<String, String> {
+        if filename == String::default() {
+            return Err(String::from("Filename must be set"));
+        }
+        if file_extension == String::default() {
+            return Err(String::from("File extension must be set"));
+        }
+
         let property = property
             .first()
             .ok_or(String::from("Failed to fetch file property"))?;
