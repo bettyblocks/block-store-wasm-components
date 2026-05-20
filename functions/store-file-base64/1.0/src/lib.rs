@@ -11,7 +11,7 @@ use bindings::{
     exports::betty_blocks::file::store_base64::{Guest as StoreGuest, Model},
 };
 
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
 
 struct Component;
 
@@ -32,12 +32,19 @@ impl StoreGuest for Component {
             .decode(&data)
             .map_err(|error| format!("Failed to decode base64 source: {error}"))?;
 
+        let full_filename = if file_extension.starts_with('.') {
+            let file_extension = file_extension.to_lowercase();
+            format!("{filename}{file_extension}")
+        } else {
+            format!("{filename}.{file_extension}")
+        };
+
         let upload_result = upload_file::upload(
             &helper_context,
             &model,
             property,
             &file_bytes,
-            &filename,
+            &full_filename,
             &file_extension,
         )
         .map_err(|error| format!("Upload failed: {error}"))?;

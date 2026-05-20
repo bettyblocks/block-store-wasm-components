@@ -44,6 +44,16 @@
           "required": true
         }
       },
+      "name": "data",
+      "label": "Base64 Data"
+    },
+    {
+      "meta": {
+        "type": "Text",
+        "validations": {
+          "required": true
+        }
+      },
       "name": "filename",
       "label": "Filename"
     },
@@ -55,18 +65,8 @@
         }
       },
       "name": "file_extension",
-      "label": "File extension"
-    },
-    {
-      "meta": {
-        "type": "Text",
-        "validations": {
-          "required": true
-        }
-      },
-      "name": "data",
-      "label": "Base64 Data"
-    },
+      "label": "File extension",
+      "info": "The extension of the file is for example JPG. You can use both .jpg or JPG to specify the file extension. Do not use .JPG, as this will make the file extension capitalized." },
     {
       "meta": {
         "type": "Output",
