@@ -24,6 +24,13 @@ impl StoreGuest for Component {
         filename: String,
         file_extension: String,
     ) -> Result<String, String> {
+        if filename == String::default() {
+            return Err(String::from("Filename must be set"));
+        }
+        if file_extension == String::default() {
+            return Err(String::from("File extension must be set"));
+        }
+
         let property = property
             .first()
             .ok_or(String::from("Failed to fetch file property"))?;
@@ -33,9 +40,9 @@ impl StoreGuest for Component {
             .map_err(|error| format!("Failed to decode base64 source: {error}"))?;
 
         let full_filename = if file_extension.starts_with('.') {
-            let file_extension = file_extension.to_lowercase();
             format!("{filename}{file_extension}")
         } else {
+            let file_extension = file_extension.to_lowercase();
             format!("{filename}.{file_extension}")
         };
 
@@ -45,7 +52,6 @@ impl StoreGuest for Component {
             property,
             &file_bytes,
             &full_filename,
-            &file_extension,
         )
         .map_err(|error| format!("Upload failed: {error}"))?;
 
