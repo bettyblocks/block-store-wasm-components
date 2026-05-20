@@ -33,9 +33,9 @@ impl StoreGuest for Component {
             .map_err(|error| format!("Failed to decode base64 source: {error}"))?;
 
         let full_filename = if file_extension.starts_with('.') {
-            let file_extension = file_extension.to_lowercase();
             format!("{filename}{file_extension}")
         } else {
+            let file_extension = file_extension.to_lowercase();
             format!("{filename}.{file_extension}")
         };
 
