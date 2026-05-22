@@ -8,7 +8,7 @@ use bindings::{
     betty_blocks::data_api::data_api::HelperContext,
     betty_blocks::file::upload_file,
     betty_blocks::types::types::Property,
-    exports::betty_blocks::file::store_base64::{Guest as StoreGuest, Model},
+    exports::betty_blocks::store_file_base64::store_base64::{Guest as StoreGuest, Model},
 };
 
 use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
@@ -48,10 +48,12 @@ impl StoreGuest for Component {
 
         let upload_result = upload_file::upload(
             &helper_context,
-            &model,
-            property,
-            &file_bytes,
-            &full_filename,
+            &upload_file::Input {
+                model,
+                property: property.clone(),
+                file_bytes,
+                full_filename,
+            },
         )
         .map_err(|error| format!("Upload failed: {error}"))?;
 
