@@ -32,7 +32,8 @@ impl StoreGuest for Component {
         }
 
         let property = property
-            .first()
+            .into_iter()
+            .next()
             .ok_or(String::from("Failed to fetch file property"))?;
 
         let file_bytes = BASE64
@@ -50,7 +51,7 @@ impl StoreGuest for Component {
             &helper_context,
             &upload_file::Input {
                 model,
-                property: property.clone(),
+                property,
                 file_bytes,
                 full_filename,
             },
