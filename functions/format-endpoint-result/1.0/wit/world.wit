@@ -9,13 +9,8 @@ interface format-endpoint-result {
         value: json-string
     }
 
-    record output {
-        status-code: u16,
-        body: json-string,
-        headers: list<tuple<string, json-string>>
-    }
-
-    format-endpoint-result: func(status-code: u16, body: json-string, headers: list<header>) -> output;
+    // This returns a json-string because the regular return type uses a list of tuples, which is unsupported
+    format-endpoint-result: func(status-code: u16, body: json-string, headers: list<header>) -> result<json-string, string>;
 }
 
 world main {

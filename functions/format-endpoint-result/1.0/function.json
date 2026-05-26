@@ -32,7 +32,7 @@
     },
     {
       "info": "The status code that will be returned by the endpoint",
-      "name": "statusCode",
+      "name": "status-code",
       "label": "Status Code",
       "meta": {
         "type": "Number",
