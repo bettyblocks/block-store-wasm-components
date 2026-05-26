@@ -9,10 +9,10 @@ const { formatEndpointResult: { formatEndpointResult } } =
   await compileComponent(wasmPath);
 
 test("it works", () => {
-  const result = formatEndpointResult(200, "{result: true}", [{
+  const result = formatEndpointResult(200, '{"result": true}', [{
     key: "Accept",
-    value: "application/json",
+    value: '"application/json"',
   }]);
 
-  expect(Array.isArray(result.headers[0])).toBe(true);
+  expect(Array.isArray(JSON.parse(result).headers[0])).toBe(true);
 });
