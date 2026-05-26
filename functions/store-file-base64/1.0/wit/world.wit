@@ -1,0 +1,25 @@
+package betty-blocks:store-file-base64@1.0.0;
+
+interface store-base64 {
+    use betty-blocks:data-api/data-api.{helper-context};
+    use betty-blocks:types/types.{model, property};
+
+    store-file: func(
+        helper-context: helper-context,
+	model: model,
+	property: list<property>,
+	data: string,
+	filename: string,
+	file-extension: string,
+    ) -> result<string, string>;
+}
+
+world store-file-base64 {
+    import wasi:http/outgoing-handler@0.2.0;
+    import wasi:random/random@0.2.0;
+    import betty-blocks:data-api/data-api;
+    import betty-blocks:types/types;
+    import betty-blocks:file/upload-file;
+
+    export store-base64;
+}

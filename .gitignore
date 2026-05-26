@@ -38,3 +38,7 @@ target/
 
 *.wasm
 !tests/example/calculator.wasm
+
+functions/**/Justfile
+
+**/wit/deps
