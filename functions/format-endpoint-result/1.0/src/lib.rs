@@ -9,7 +9,7 @@ wit_bindgen::generate!({ generate_all });
 struct FormattedEndpointResult {
     #[serde(rename = "statusCode")]
     status_code: u16,
-    /// The body is explicitly left unparsed (and so will be serialized as a string within a json string) to be compatible with the old javascript action.
+    /// The body is explicitly left unparsed (and so will be serialized as a string within a JSON string) to be compatible with the old JavaScript action.
     body: String,
     headers: Vec<(String, serde_json::Value)>,
 }
