@@ -22,7 +22,7 @@ impl Guest for Component {
         body: JsonString,
         headers: Vec<Header>,
     ) -> Result<JsonString, String> {
-        let mut parsed_headers = Vec::new();
+        let mut parsed_headers = Vec::with_capacity(headers.len());
 
         for header in headers {
             parsed_headers.push((
