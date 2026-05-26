@@ -18,10 +18,7 @@ impl Guest for Component {
         serde_json::to_string(&FormattedEndpointResult {
             status_code: 302,
             body: String::from("Redirect"),
-            headers: vec![(
-                String::from("Location"),
-                redirect_url,
-            )],
+            headers: vec![(String::from("Location"), redirect_url)],
         })
         .map_err(|_| String::from("Could not serialize redirect response as JSON"))
     }
@@ -38,9 +35,11 @@ mod tests {
         let url = String::from("http://example.com");
 
         assert_eq!(
-            serde_json::from_str::<FormattedEndpointResult>(&Component::redirect(url.clone()).unwrap())
-                .unwrap()
-                .headers[0]
+            serde_json::from_str::<FormattedEndpointResult>(
+                &Component::redirect(url.clone()).unwrap()
+            )
+            .unwrap()
+            .headers[0]
                 .1,
             url
         );
