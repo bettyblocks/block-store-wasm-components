@@ -1,0 +1,59 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+  REGISTRY: ghcr.io
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: wasm32-wasip2
+          cache-directories: "functions/*/*/target"
+          cache-all-crates: "true"
+
+      - uses: extractions/setup-just@v3
+
+      - name: Setup wash
+        uses: wasmCloud/setup-wash-action@main
+        with:
+          wash-version: v2.1.0
+
+      - name: Install wkg
+        run: |
+          curl -fsSL https://github.com/bytecodealliance/wasm-pkg-tools/releases/download/v0.15.0/wkg-x86_64-unknown-linux-gnu -o wkg
+          chmod +x wkg
+          mv wkg /usr/local/bin/
+
+      - name: Build all components
+        run: just build
+
+      - name: Log in to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push all components to ghcr
+        run: |
+          for manifest in functions/*/*/Cargo.toml; do
+            component_directory=$(dirname "$manifest")
+            package_registry_path="${{ env.REGISTRY }}/$(sed -nE 's/package betty-blocks:([a-z0-9-]+)@([0-9]\.[0-9]\.[0-9]);/bettyblocks\/\1:\2/p' "$component_directory/wit/world.wit")"
+            wash oci push "$package_registry_path" "$component_directory/"*.wasm
+          done
