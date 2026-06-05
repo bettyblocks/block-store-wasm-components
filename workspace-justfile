@@ -21,7 +21,7 @@ format-check:
 	cargo fmt --check
 
 quality-check:
-	cargo clippy
+	cargo clippy --all-targets -- -D warnings
 
 clean:
 	cargo clean

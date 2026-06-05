@@ -24,17 +24,17 @@ impl StoreGuest for Component {
         filename: String,
         file_extension: String,
     ) -> Result<String, String> {
-        if filename == String::default() {
+        if string_is_empty(&filename) {
             return Err(String::from("Filename must be set"));
         }
-        if file_extension == String::default() {
+        if string_is_empty(&file_extension) {
             return Err(String::from("File extension must be set"));
         }
 
         let property = property
             .into_iter()
             .next()
-            .ok_or(String::from("Failed to fetch file property"))?;
+            .ok_or("Failed to fetch file property")?;
 
         let file_bytes = BASE64
             .decode(&data)
@@ -62,4 +62,28 @@ impl StoreGuest for Component {
     }
 }
 
+/// Checks if the string is empty or only whitespace.
+fn string_is_empty(string: &str) -> bool {
+    string.trim().is_empty()
+}
+
 bindings::export!(Component with_types_in bindings);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn empty_string_is_invalid() {
+        assert!(string_is_empty(""));
+    }
+
+    #[test]
+    fn only_whitespace_in_string_is_invalid() {
+        assert!(string_is_empty("   "));
+    }
+
+    #[test]
+    fn not_empty_string_is_valid() {
+        assert!(!string_is_empty("jpg"));
+    }
+}
