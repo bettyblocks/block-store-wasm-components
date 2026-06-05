@@ -108,25 +108,23 @@ mod tests {
         use super::*;
         use proptest::prelude::*;
 
+        fn get_non_testable_params() -> (HelperContext, Model, Vec<Property>) {
+            let helper_context = HelperContext {
+                action_id: String::default(),
+                application_id: String::default(),
+                encrypted_configurations: None,
+                jwt: None,
+                log_id: String::default(),
+            };
+            let model = Model {
+                name: String::default(),
+            };
+            let property = vec![Property {
+                name: String::default(),
+            }];
 
-    fn get_non_testable_params() -> (HelperContext, Model, Vec<Property>) {
-        let helper_context = HelperContext {
-            action_id: String::default(),
-            application_id: String::default(),
-            encrypted_configurations: None,
-            jwt: None,
-            log_id: String::default(),
-        };
-        let model = Model {
-            name: String::default(),
-        };
-        let property = vec![Property {
-            name: String::default(),
-        }];
-
-        (helper_context, model, property)
-    }
-
+            (helper_context, model, property)
+        }
 
         proptest! {
             #[test]
