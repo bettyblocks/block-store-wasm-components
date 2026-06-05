@@ -62,6 +62,7 @@ fn invalid_split_once_gives_none() {
 */
 
 /// Proptests have to be run as unit tests, because integration tests on cdylib crates aren't able to directly interact with the crate.
+#[cfg(test)]
 mod proptests {
     use super::*;
     use proptest::prelude::*;
