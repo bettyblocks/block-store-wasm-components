@@ -84,6 +84,6 @@ mod tests {
 
     #[test]
     fn not_empty_string_is_valid() {
-        assert!(string_is_empty("jpg"));
+        assert!(!string_is_empty("jpg"));
     }
 }
