@@ -9,3 +9,6 @@ crate-type = ["cdylib"]
 [dependencies]
 wit-bindgen = "0.42.0"
 
+[dev-dependencies]
+proptest = "1.11.0"
+

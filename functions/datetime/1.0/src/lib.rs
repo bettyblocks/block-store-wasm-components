@@ -371,7 +371,7 @@ mod tests {
         proptest! {
             #[test]
             fn change_timezone(tz in "[+-]([01][0-9]|2[0-3]):([0-5][0-9])", dt in "(((2000|2400|2800|((19|2[0-9])(0[48]|[2468][048]|[13579][26])))-02-29)|(((19|2[0-9])[0-9]{2})-02-(0[1-9]|1[0-9]|2[0-8]))|(((19|2[0-9])[0-9]{2})-(0[13578]|10|12)-(0[1-9]|[12][0-9]|3[01]))|(((19|2[0-9])[0-9]{2})-(0[469]|11)-(0[1-9]|[12][0-9]|30)))T([01][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]([+-]([01][0-9]|2[0-3]):([0-5][0-9])|Z)") {
-                Component::change_timezone(dt, tz).unwrap();
+                prop_assert!(Component::change_timezone(dt, tz).is_ok());
             }
 
             #[test]
@@ -385,7 +385,7 @@ mod tests {
                     5 => OffsetSize::Months,
                     _ => OffsetSize::Years,
                 };
-                Component::offset_datetime(dt, oc, os).unwrap();
+                prop_assert!(Component::offset_datetime(dt, oc, os).is_ok());
             }
 
             #[test]
@@ -399,7 +399,7 @@ mod tests {
                     5 => OffsetSize::Months,
                     _ => OffsetSize::Years,
                 };
-                Component::offset_datetime_in_business_days(dt, oc, os).unwrap();
+                prop_assert!(Component::offset_datetime_in_business_days(dt, oc, os).is_ok());
             }
         }
     }
