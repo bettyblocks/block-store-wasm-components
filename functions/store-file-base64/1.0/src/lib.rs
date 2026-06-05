@@ -24,8 +24,12 @@ impl StoreGuest for Component {
         filename: String,
         file_extension: String,
     ) -> Result<String, String> {
-        if string_is_empty(&filename) { return Err(String::from("Filename must be set")); }
-        if string_is_empty(&file_extension) { return Err(String::from("File extension must be set")); }
+        if string_is_empty(&filename) {
+            return Err(String::from("Filename must be set"));
+        }
+        if string_is_empty(&file_extension) {
+            return Err(String::from("File extension must be set"));
+        }
 
         let property = property
             .into_iter()
