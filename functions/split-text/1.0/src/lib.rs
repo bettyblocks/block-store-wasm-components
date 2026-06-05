@@ -60,3 +60,31 @@ fn invalid_split_once_gives_none() {
     assert_eq!(result, None);
 }
 */
+
+/// Proptests have to be run as unit tests, because integration tests on cdylib crates aren't able to directly interact with the crate.
+mod proptests {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn splits_the_correct_amount_of_times_with_random_input(
+            string in ".{0,100}",
+            separator in ".{1,10}",
+        ) {
+            let result = SplitText::split_all(string.clone(), separator.clone());
+
+            let expected_count = string.matches(&separator).count() + 1;
+            prop_assert_eq!(result.len(), expected_count);
+
+            for element in &result {
+                prop_assert!(
+                    !element.contains(&separator),
+                    "element {:?} still contains separator {:?}",
+                    element,
+                    separator,
+                );
+            }
+        }
+    }
+}
