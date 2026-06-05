@@ -24,8 +24,8 @@ impl StoreGuest for Component {
         filename: String,
         file_extension: String,
     ) -> Result<String, String> {
-        check_filename(&filename)?;
-        check_file_extension(&file_extension)?;
+        if string_is_empty(&filename) { return Err(String::from("Filename must be set")); }
+        if string_is_empty(&file_extension) { return Err(String::from("File extension must be set")); }
 
         let property = property
             .into_iter()
@@ -58,22 +58,9 @@ impl StoreGuest for Component {
     }
 }
 
-/// Checks if the filename isn't empty or only whitespace.
-fn check_filename(filename: &str) -> Result<(), &'static str> {
-    if filename.trim().is_empty() {
-        return Err("Filename must be set");
-    }
-
-    Ok(())
-}
-
-/// Checks if the file extension isn't empty or only whitespace.
-fn check_file_extension(file_extension: &str) -> Result<(), &'static str> {
-    if file_extension.trim().is_empty() {
-        return Err("File extension must be set");
-    }
-
-    Ok(())
+/// Checks if the string is empty or only whitespace.
+fn string_is_empty(string: &str) -> bool {
+    string.trim().is_empty()
 }
 
 bindings::export!(Component with_types_in bindings);
@@ -82,32 +69,17 @@ bindings::export!(Component with_types_in bindings);
 mod tests {
     use super::*;
     #[test]
-    fn empty_filename_is_invalid() {
-        assert!(check_filename("").is_err());
+    fn empty_string_is_invalid() {
+        assert!(string_is_empty(""));
     }
 
     #[test]
-    fn only_whitespace_filename_is_invalid() {
-        assert!(check_filename("   ").is_err());
+    fn only_whitespace_in_string_is_invalid() {
+        assert!(string_is_empty("   "));
     }
 
     #[test]
-    fn empty_file_extension_is_invalid() {
-        assert!(check_file_extension("").is_err());
-    }
-
-    #[test]
-    fn only_whitespace_file_extension_is_invalid() {
-        assert!(check_file_extension("   ").is_err());
-    }
-
-    #[test]
-    fn valid_filename_is_ok() {
-        assert!(check_filename("some_filename").is_ok());
-    }
-
-    #[test]
-    fn valid_file_extension_is_ok() {
-        assert!(check_file_extension("jpg").is_ok());
+    fn not_empty_string_is_valid() {
+        assert!(string_is_empty("jpg"));
     }
 }
