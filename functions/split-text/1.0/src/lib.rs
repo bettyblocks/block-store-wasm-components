@@ -69,23 +69,43 @@ mod proptests {
 
     proptest! {
         #[test]
-        fn splits_the_correct_amount_of_times_with_random_input(
-            string in ".{0,100}",
-            separator in ".{1,10}",
+        fn splits_the_correct_amount_of_times_with_separator_from_string(
+            string in ".{2,100}",
+            separator_start in 0usize..100,
+            separator_length in 1usize..10,
         ) {
+            let character_count = string.chars().count();
+            prop_assume!(character_count > separator_length);
+
+            let start = separator_start % (character_count - separator_length);
+            let separator: String = string.chars().skip(start).take(separator_length).collect();
+
             let result = SplitText::split_all(string.clone(), separator.clone());
 
-            let expected_count = string.matches(&separator).count() + 1;
+            let expected_count = string.matches(separator.as_str()).count() + 1;
             prop_assert_eq!(result.len(), expected_count);
 
             for element in &result {
                 prop_assert!(
-                    !element.contains(&separator),
+                    !element.contains(separator.as_str()),
                     "element {:?} still contains separator {:?}",
                     element,
                     separator,
                 );
             }
+        }
+
+        #[test]
+        fn returns_the_original_string_when_separator_is_absent(
+            string in ".{1,100}",
+            separator in ".{1,10}",
+        ) {
+            prop_assume!(!string.contains(&separator));
+
+            let result = SplitText::split_all(string.clone(), separator.clone());
+
+            prop_assert_eq!(result.len(), 1);
+            prop_assert_eq!(&result[0], &string);
         }
     }
 }
