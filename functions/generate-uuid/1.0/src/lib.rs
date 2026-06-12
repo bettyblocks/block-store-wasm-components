@@ -1,16 +1,29 @@
-use crate::exports::betty_blocks::generate_uuid::generate_uuid::Guest;
+#[cfg(not(feature = "test"))]
+pub mod bindings {
+    wit_bindgen::generate!({ generate_all });
 
-wit_bindgen::generate!({ generate_all });
+    use crate::GenerateUuid;
+    export!(GenerateUuid);
+}
+#[cfg(not(feature = "test"))]
+use crate::bindings::exports::betty_blocks::generate_uuid::generate_uuid::Guest;
 
-struct GenerateUuid;
+#[cfg(feature = "test")]
+pub mod bindings {
+    pub trait Guest {
+        fn generate_uuid() -> String;
+    }
+}
+#[cfg(feature = "test")]
+use crate::bindings::Guest;
+
+pub struct GenerateUuid;
 
 impl Guest for GenerateUuid {
     fn generate_uuid() -> String {
         String::from(uuid::Uuid::new_v4())
     }
 }
-
-export! {GenerateUuid}
 
 #[test]
 fn is_uuidv4_valid() {

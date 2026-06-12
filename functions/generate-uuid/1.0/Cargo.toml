@@ -3,8 +3,8 @@ name = "generate_uuid"
 version = "1.0.0"
 edition = "2024"
 
-[lib]
-crate-type = ["cdylib"]
+[features]
+test = []
 
 [dependencies]
 uuid = { version = "1.20.0", features = ["v4"] }
