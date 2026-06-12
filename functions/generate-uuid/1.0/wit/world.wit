@@ -5,6 +5,6 @@ interface generate-uuid {
 }
 
 world main {
+    import betty-blocks:random-hex/random-hex@1.0.0;
     export generate-uuid;
 }
-

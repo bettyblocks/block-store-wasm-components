@@ -2,7 +2,7 @@
 target = ["wasm32-wasip2"]
 
 [alias]
-t = "test --target host-tuple"
+t = "test --features test --target host-tuple"
 
 [target.wasm32-wasip2]
 runner = "wasmtime -S http"
