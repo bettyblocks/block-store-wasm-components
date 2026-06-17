@@ -65,11 +65,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # This points to ghcr.io/bettyblocks/<package>:<version>.
+      # As our org is github.com/bettyblocks/, so we're just pointing to our own registry.
       - name: Push all components to ghcr
         run: |
           for MANIFEST in functions/*/*/Cargo.toml; do
             COMPONENT_DIRECTORY=$(dirname "$MANIFEST")
-            PACKAGE_REGISTRY_PATH="${{ env.REGISTRY }}/$(sed -nE '1s/package betty-blocks:([a-z0-9-]+)@([0-9]+\.[0-9]+\.[0-9]+);/\1:\2/p' "$COMPONENT_DIRECTORY/wit/world.wit")"
+            PACKAGE_REGISTRY_PATH="${{ env.REGISTRY }}/$(sed -nE '1s/package betty-blocks:([a-z0-9-]+)@([0-9]+\.[0-9]+\.[0-9]+);/bettyblocks\/\1:\2/p' "$COMPONENT_DIRECTORY/wit/world.wit")"
             wkg oci push "$PACKAGE_REGISTRY_PATH" "$COMPONENT_DIRECTORY/"*.wasm
           done
 
@@ -99,10 +101,13 @@ jobs:
           username: ${{ secrets.AZURE_USERNAME }}
           password: ${{ secrets.AZURE_PASSWORD }}
 
+      # This points to someregistry.io/betty-blocks/<package>:<version>.
+      # The reason for this is that wkg resolves the path of the package to fetch
+      # through the supposed WIT package namespace, which is betty-blocks.
       - name: Push all components to Azure registry
         run: |
           for MANIFEST in functions/*/*/Cargo.toml; do
             COMPONENT_DIRECTORY=$(dirname "$MANIFEST")
-            PACKAGE_REGISTRY_PATH="${{ secrets.AZURE_REGISTRY }}/$(sed -nE '1s/package (betty-blocks:[a-z0-9-]+)@([0-9]+\.[0-9]+\.[0-9]+);/\1:\2/p' "$COMPONENT_DIRECTORY/wit/world.wit")"
+            PACKAGE_REGISTRY_PATH="${{ secrets.AZURE_REGISTRY }}/$(sed -nE '1s/package betty-blocks:([a-z0-9-]+)@([0-9]+\.[0-9]+\.[0-9]+);/betty-blocks\/\1:\2/p' "$COMPONENT_DIRECTORY/wit/world.wit")"
             wkg oci push "$PACKAGE_REGISTRY_PATH" "$COMPONENT_DIRECTORY/"*.wasm
           done
