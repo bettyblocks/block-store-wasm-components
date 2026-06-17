@@ -1,29 +1,28 @@
-propagate-workspace-justfiles:
+build:
+	cargo build --release
+	just distribute-wasm
+
+distribute-wasm:
 	#!/usr/bin/env bash
-	for working_directory in $(just index); do
-		echo "--- Copying Justfile to $working_directory ---"
-		(cp workspace-justfile "$working_directory/Justfile")
+	for directory in $(just index); do
+		library_name="$(grep '^name' "$directory/Cargo.toml" | head -1 | sed 's/.*"\(.*\)"/\1/' | tr '-' '_')"
+		wasm_path="target/wasm32-wasip2/release/${library_name}.wasm"
+		if [ -f "$wasm_path" ]; then
+			cp "$wasm_path" "$directory/"
+		fi
 	done
 
-build: build-all
-build-all:
-	just run-just-command-all build
+test:
+	cargo test --workspace
 
-test: test-all
-test-all:
-	just run-just-command-all test
+format:
+	cargo fmt --all
 
-format: format-all
-format-all:
-	just run-just-command-all format
+format-check:
+	cargo fmt --all --check
 
-format-check: format-check-all
-format-check-all:
-	just run-just-command-all format-check
-
-quality-check: quality-check-all
-quality-check-all:
-	just run-just-command-all quality-check
+quality-check:
+	cargo clippy --workspace --all-targets -- -D warnings
 
 clean:
 	cargo clean
@@ -33,14 +32,6 @@ integration-test:
 	deno fmt --check
 	deno lint
 	deno task test
-
-run-just-command-all command_name: propagate-workspace-justfiles
-	#!/usr/bin/env bash
-	set -euo pipefail
-	for working_directory in $(just index); do
-		echo "--- Running {{ command_name }}s in $working_directory ---"
-		(cd $working_directory && just {{ command_name }})
-	done
 
 index:
 	find functions -type f -name "Cargo.toml" -exec dirname {} \;

@@ -2,6 +2,7 @@
 name = "generate_uuid"
 version = "1.0.0"
 edition.workspace = true
+build = "../../../build.rs"
 
 [lib]
 crate-type = ["cdylib"]
