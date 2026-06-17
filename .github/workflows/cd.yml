@@ -65,6 +65,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # This points to ghcr.io/bettyblocks/<package>:<version>.
+      # As our org is github.com/bettyblocks/, so we're just pointing to our own registry.
       - name: Push all components to ghcr
         run: |
           for MANIFEST in functions/*/*/Cargo.toml; do
@@ -99,6 +101,9 @@ jobs:
           username: ${{ secrets.AZURE_USERNAME }}
           password: ${{ secrets.AZURE_PASSWORD }}
 
+      # This points to someregistry.io/betty-blocks/<package>:<version>.
+      # The reason for this is that wkg resolves the path of the package to fetch
+      # through the supposed WIT package namespace, which is betty-blocks.
       - name: Push all components to Azure registry
         run: |
           for MANIFEST in functions/*/*/Cargo.toml; do
