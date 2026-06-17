@@ -25,9 +25,8 @@ quality-check: quality-check-all
 quality-check-all:
 	just run-just-command-all quality-check
 
-clean: clean-all
-clean-all:
-	just run-just-command-all clean
+clean:
+	cargo clean
 
 integration-test:
 	deno install

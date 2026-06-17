@@ -38,10 +38,7 @@ fn load_component(wasm_filename: &str) -> (Engine, Component) {
     (engine, component)
 }
 
-fn instantiate_with_mock(
-    engine: &Engine,
-    component: &Component,
-) -> (Store<ComponentState>, Main) {
+fn instantiate_with_mock(engine: &Engine, component: &Component) -> (Store<ComponentState>, Main) {
     let mut linker: Linker<ComponentState> = Linker::new(engine);
     wasmtime_wasi::p2::add_to_linker_sync(&mut linker).expect("failed to add WASI to linker");
     Main::add_to_linker::<_, HasSelf<_>>(&mut linker, |state| state)
@@ -52,8 +49,8 @@ fn instantiate_with_mock(
         resource_table: ResourceTable::new(),
     };
     let mut store = Store::new(engine, state);
-    let instance = Main::instantiate(&mut store, component, &linker)
-        .expect("failed to instantiate component");
+    let instance =
+        Main::instantiate(&mut store, component, &linker).expect("failed to instantiate component");
     (store, instance)
 }
 

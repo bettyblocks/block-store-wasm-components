@@ -1,11 +1,10 @@
 [package]
 name = "concat_text"
 version = "1.0.0"
-edition = "2024"
+edition.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-wit-bindgen = "0.42.0"
-
+wit-bindgen.workspace = true

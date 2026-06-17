@@ -1,18 +1,15 @@
 [package]
 name = "generate_uuid"
 version = "1.0.0"
-edition = "2024"
+edition.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
 
-[features]
-test = []
-
 [dependencies]
 uuid = { version = "1.20.0", features = ["v4"] }
-wit-bindgen = "0.42.0"
+wit-bindgen.workspace = true
 
 [dev-dependencies]
-wasmtime = "45"
-wasmtime-wasi = "45"
+wasmtime.workspace = true
+wasmtime-wasi.workspace = true

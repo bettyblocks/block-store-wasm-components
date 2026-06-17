@@ -4,14 +4,20 @@ fetch_wit_deps:
 # mv will return a non-zero exit code if trying to move a file to a copy of itself.
 # Meaning, `./target/wasm32-wasip2/release/something.wasm` is the exact same as `./something.wasm`, making mv error.
 # We surpress it here as this is not an error in our case.
-move_wasm_to_root: 
-	mv ./target/wasm32-wasip2/release/*.wasm . 2> /dev/null || exit 0
+move_wasm_to_root:
+	#!/usr/bin/env bash
+	workspace_root="$(dirname "$(cargo locate-project --workspace --message-format plain)")"
+	library_name="$(grep '^name' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/' | tr '-' '_')"
+	wasm_path="${workspace_root}/target/wasm32-wasip2/release/${library_name}.wasm"
+	if [ -f "$wasm_path" ]; then
+		cp "$wasm_path" .
+	fi
 
 build: fetch_wit_deps
-	cargo build --release --target wasm32-wasip2
+	cargo build --release
 	just move_wasm_to_root
 
-test: 
+test:
 	cargo test
 
 format:
@@ -22,6 +28,3 @@ format-check:
 
 quality-check:
 	cargo clippy --all-targets -- -D warnings
-
-clean:
-	cargo clean

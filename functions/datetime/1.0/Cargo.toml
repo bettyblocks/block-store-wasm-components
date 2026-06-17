@@ -1,15 +1,14 @@
 [package]
 name = "datetime"
 version = "1.0.0"
-edition = "2024"
+edition.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
 chrono = "0.4.43"
-wit-bindgen = "0.42.0"
+wit-bindgen.workspace = true
 
 [dev-dependencies]
 proptest = "1.11.0"
-    

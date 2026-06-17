@@ -1,24 +1,24 @@
-#[cfg(not(feature = "test"))]
+#[cfg(not(test))]
 pub mod bindings {
     wit_bindgen::generate!({ generate_all });
 
     use crate::GenerateUuid;
     export!(GenerateUuid);
 }
-#[cfg(not(feature = "test"))]
-use crate::bindings::exports::betty_blocks::generate_uuid::generate_uuid::Guest;
-#[cfg(not(feature = "test"))]
+#[cfg(not(test))]
 use crate::bindings::betty_blocks::random_hex::random_hex::generate_random_hex;
+#[cfg(not(test))]
+use crate::bindings::exports::betty_blocks::generate_uuid::generate_uuid::Guest;
 
-#[cfg(feature = "test")]
-pub mod bindings {
+#[cfg(test)]
+mod bindings {
     pub trait Guest {
         fn generate_uuid() -> String;
     }
 }
-#[cfg(feature = "test")]
+#[cfg(test)]
 use crate::bindings::Guest;
-#[cfg(feature = "test")]
+#[cfg(test)]
 fn generate_random_hex(_size: u32) -> String {
     String::from("AABBCCDD")
 }

@@ -17,7 +17,7 @@ jobs:
         with:
           components: clippy, rustfmt
           target: wasm32-wasip2
-          cache-directories: functions/*/1.0/target
+          cache-directories: target
           cache-all-crates: "true"
 
       - uses: extractions/setup-just@v3
