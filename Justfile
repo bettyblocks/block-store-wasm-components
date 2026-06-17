@@ -1,5 +1,5 @@
 build:
-	cargo build --release
+	cargo build --release --target wasm32-wasip2
 	just distribute-wasm
 
 distribute-wasm:
@@ -12,17 +12,17 @@ distribute-wasm:
 		fi
 	done
 
-test:
-	cargo test --workspace
+test: build
+	cargo test
 
 format:
-	cargo fmt --all
+	cargo fmt
 
 format-check:
-	cargo fmt --all --check
+	cargo fmt --check
 
 quality-check:
-	cargo clippy --workspace --all-targets -- -D warnings
+	cargo clippy --all-targets -- -D warnings
 
 clean:
 	cargo clean
