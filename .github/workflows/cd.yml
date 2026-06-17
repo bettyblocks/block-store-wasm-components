@@ -8,14 +8,11 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  cd:
+  build:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
-      packages: write
-      attestations: write
-      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -29,14 +26,37 @@ jobs:
 
       - uses: extractions/setup-just@v3
 
-      - name: Install wkg
-        run: |
-          curl -fsSL https://github.com/bytecodealliance/wasm-pkg-tools/releases/download/v0.15.0/wkg-x86_64-unknown-linux-gnu -o wkg
-          chmod +x wkg
-          mv wkg /usr/local/bin/
+      - uses: ./.github/actions/install-wkg
 
       - name: Build all components
         run: just build
+
+      - name: Upload wasm artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-components
+          path: functions/*/*/*.wasm
+
+  push-ghcr:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/install-wkg
+
+      - name: Download wasm artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-components
+          path: functions
 
       - name: Log in to ghcr
         uses: docker/login-action@v3
@@ -49,9 +69,28 @@ jobs:
         run: |
           for MANIFEST in functions/*/*/Cargo.toml; do
             COMPONENT_DIRECTORY=$(dirname "$MANIFEST")
-            PACKAGE_REGISTRY_PATH="${{ env.REGISTRY }}/$(sed -nE '1s/package (betty-blocks:[a-z0-9-]+)@([0-9]+\.[0-9]+\.[0-9]+);/\1:\2/p' "$COMPONENT_DIRECTORY/wit/world.wit")"
+            PACKAGE_REGISTRY_PATH="${{ env.REGISTRY }}/$(sed -nE '1s/package betty-blocks:([a-z0-9-]+)@([0-9]+\.[0-9]+\.[0-9]+);/\1:\2/p' "$COMPONENT_DIRECTORY/wit/world.wit")"
             wkg oci push "$PACKAGE_REGISTRY_PATH" "$COMPONENT_DIRECTORY/"*.wasm
           done
+
+  push-azure:
+    needs: [build]
+    if: always() && needs.build.result == 'success'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/install-wkg
+
+      - name: Download wasm artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-components
+          path: functions
 
       - name: Log in to Azure registry
         uses: docker/login-action@v3
