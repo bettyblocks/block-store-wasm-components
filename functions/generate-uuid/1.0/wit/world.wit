@@ -2,6 +2,13 @@ package betty-blocks:generate-uuid@1.0.0;
 
 interface generate-uuid {
     generate-uuid: func() -> string;
+
+    resource uuid-batch {
+        constructor();
+        generate-next: func() -> string;
+        count: func() -> u32;
+        collect: func() -> list<string>;
+    }
 }
 
 world main {

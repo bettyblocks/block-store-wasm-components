@@ -8,6 +8,6 @@ fn main() {
         .expect("failed to run `wkg wit fetch` — is wkg installed?");
 
     if !status.success() {
-        panic!("wkg wit fetch failed");
+        println!("cargo:warning=wkg wit fetch failed — using existing WIT deps if available");
     }
 }

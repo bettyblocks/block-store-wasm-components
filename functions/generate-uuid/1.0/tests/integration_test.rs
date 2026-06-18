@@ -1,74 +1,100 @@
-mod bindings {
-    wasmtime::component::bindgen!({
-        path: "wit",
-        world: "main",
-    });
-}
+mod helpers;
 
-use bindings::Main;
-use wasmtime::component::{Component, HasSelf, Linker, ResourceTable};
-use wasmtime::{Engine, Store};
-use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiCtxView, WasiView};
+use helpers::ComponentHarness;
 
-struct ComponentState {
-    wasi_context: WasiCtx,
-    resource_table: ResourceTable,
-}
+const RANDOM_HEX_INTERFACE: &str = "betty-blocks:random-hex/random-hex@1.0.0";
 
-impl WasiView for ComponentState {
-    fn ctx(&mut self) -> WasiCtxView<'_> {
-        WasiCtxView {
-            ctx: &mut self.wasi_context,
-            table: &mut self.resource_table,
-        }
-    }
-}
-
-impl bindings::betty_blocks::random_hex::random_hex::Host for ComponentState {
-    fn generate_random_hex(&mut self, size: u32) -> String {
-        "A".repeat(size as usize)
-    }
-}
-
-fn load_component(wasm_filename: &str) -> (Engine, Component) {
-    let engine = Engine::default();
-    let component_path = format!("{}/{wasm_filename}", env!("CARGO_MANIFEST_DIR"));
-    let component =
-        Component::from_file(&engine, &component_path).expect("failed to load WASM component");
-    (engine, component)
-}
-
-fn instantiate_with_mock(engine: &Engine, component: &Component) -> (Store<ComponentState>, Main) {
-    let mut linker: Linker<ComponentState> = Linker::new(engine);
-    wasmtime_wasi::p2::add_to_linker_sync(&mut linker).expect("failed to add WASI to linker");
-    Main::add_to_linker::<_, HasSelf<_>>(&mut linker, |state| state)
-        .expect("failed to add imports to linker");
-
-    let state = ComponentState {
-        wasi_context: WasiCtxBuilder::new().build(),
-        resource_table: ResourceTable::new(),
-    };
-    let mut store = Store::new(engine, state);
-    let instance =
-        Main::instantiate(&mut store, component, &linker).expect("failed to instantiate component");
-    (store, instance)
+fn mock_random_hex(harness: &mut ComponentHarness) {
+    harness.mock(
+        RANDOM_HEX_INTERFACE,
+        "generate-random-hex",
+        |_context, (size,): (u32,)| Ok(("A".repeat(size as usize),)),
+    );
 }
 
 #[test]
 fn exported_uuid_with_random_hex_is_valid() {
-    let (engine, component) = load_component("generate_uuid.wasm");
-    let (mut store, instance) = instantiate_with_mock(&engine, &component);
+    let mut harness = ComponentHarness::new("generate_uuid.wasm");
+    mock_random_hex(&mut harness);
+    let mut component = harness.instantiate();
 
-    let interface = instance.betty_blocks_generate_uuid_generate_uuid();
+    let interface = component.main.betty_blocks_generate_uuid_generate_uuid();
     let result = interface
-        .call_generate_uuid(&mut store)
+        .call_generate_uuid(&mut component.store)
         .expect("failed to call generate-uuid");
 
-    // Expected format: <uuid>-<random-hex>
     let parts: Vec<&str> = result.rsplitn(2, '-').collect();
     let random_hex_part = parts[0];
     let uuid_part = parts[1];
 
     assert_eq!(random_hex_part, "AAAAAAAA");
     assert_eq!(uuid_part.len(), 36);
+}
+
+#[test]
+fn uuid_batch_tracks_state_across_calls() {
+    let mut harness = ComponentHarness::new("generate_uuid.wasm");
+    mock_random_hex(&mut harness);
+    let mut component = harness.instantiate();
+
+    let interface = component.main.betty_blocks_generate_uuid_generate_uuid();
+    let batch_api = interface.uuid_batch();
+
+    let batch = batch_api
+        .call_constructor(&mut component.store)
+        .expect("constructor failed");
+
+    let count = batch_api
+        .call_count(&mut component.store, batch)
+        .expect("count failed");
+    assert_eq!(count, 0);
+
+    let first = batch_api
+        .call_generate_next(&mut component.store, batch)
+        .expect("generate-next failed");
+    let second = batch_api
+        .call_generate_next(&mut component.store, batch)
+        .expect("generate-next failed");
+
+    assert_ne!(first, second);
+
+    let count = batch_api
+        .call_count(&mut component.store, batch)
+        .expect("count failed");
+    assert_eq!(count, 2);
+
+    let collected = batch_api
+        .call_collect(&mut component.store, batch)
+        .expect("collect failed");
+    assert_eq!(collected.len(), 2);
+    assert_eq!(collected[0], first);
+    assert_eq!(collected[1], second);
+}
+
+#[test]
+fn multiple_uuid_batches_have_independent_state() {
+    let mut harness = ComponentHarness::new("generate_uuid.wasm");
+    mock_random_hex(&mut harness);
+    let mut component = harness.instantiate();
+
+    let interface = component.main.betty_blocks_generate_uuid_generate_uuid();
+    let batch_api = interface.uuid_batch();
+
+    let batch_a = batch_api
+        .call_constructor(&mut component.store)
+        .expect("constructor failed");
+    let batch_b = batch_api
+        .call_constructor(&mut component.store)
+        .expect("constructor failed");
+
+    batch_api.call_generate_next(&mut component.store, batch_a).unwrap();
+    batch_api.call_generate_next(&mut component.store, batch_a).unwrap();
+    batch_api.call_generate_next(&mut component.store, batch_a).unwrap();
+    batch_api.call_generate_next(&mut component.store, batch_b).unwrap();
+
+    let count_a = batch_api.call_count(&mut component.store, batch_a).unwrap();
+    let count_b = batch_api.call_count(&mut component.store, batch_b).unwrap();
+
+    assert_eq!(count_a, 3);
+    assert_eq!(count_b, 1);
 }
