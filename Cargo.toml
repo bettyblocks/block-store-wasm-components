@@ -1,11 +1,10 @@
 [workspace]
 members = ["functions/*/*"]
-resolver = "3"
 
 [workspace.package]
 edition = "2024"
 
 [workspace.dependencies]
-wasmtime = "45"
-wasmtime-wasi = "45"
+wasmtime = { version = "45", default-features = false, features = ["component-model", "cranelift", "runtime", "std"] }
+wasmtime-testing-helper = { path = "../wasmtime-testing-helper" }
 wit-bindgen = "0.47.0"

@@ -1,3 +1,0 @@
-[overrides]
-"betty-blocks:random-hex" = { path = "../../random-hex/1.0/wit" }
-"betty-blocks:store-file" = { path = "../../store-file-base64/1.0/wit" }
