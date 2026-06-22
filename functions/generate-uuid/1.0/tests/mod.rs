@@ -12,10 +12,7 @@ fn is_valid_uuidv4() {
     let interface = component
         .component
         .betty_blocks_generate_uuid_generate_uuid();
-    let uuid = interface
-        .call_generate_uuid(&mut component.store)
-        .unwrap();
-
+    let uuid = interface.call_generate_uuid(&mut component.store).unwrap();
 
     assert_eq!(uuid.len(), 32 + 4);
 

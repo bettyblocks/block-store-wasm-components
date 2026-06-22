@@ -235,6 +235,8 @@ dependencies = [
 name = "concat_text"
 version = "1.0.0"
 dependencies = [
+ "wasmtime",
+ "wasmtime-testing-helper",
  "wit-bindgen 0.47.0",
 ]
 
