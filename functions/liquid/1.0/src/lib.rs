@@ -1,6 +1,11 @@
-use crate::exports::betty_blocks::liquid::liquid::Guest;
+mod bindings {
+    wit_bindgen::generate!({ generate_all });
 
-wit_bindgen::generate!({ generate_all });
+    use crate::Liquid;
+    export!(Liquid);
+}
+
+use crate::bindings::exports::betty_blocks::liquid::liquid::Guest;
 
 struct Liquid;
 
@@ -43,8 +48,6 @@ fn render_template(
         .parse(template)?
         .render(&globals)
 }
-
-export! {Liquid}
 
 #[test]
 fn can_render_template_without_variables() {

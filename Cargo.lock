@@ -1001,6 +1001,8 @@ version = "1.0.0"
 dependencies = [
  "liquid",
  "serde_json",
+ "wasmtime",
+ "wasmtime-testing-helper",
  "wit-bindgen 0.47.0",
 ]
 
