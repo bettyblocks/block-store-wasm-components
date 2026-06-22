@@ -1,0 +1,17 @@
+name: Install wkg
+description: Install the wkg CLI from bytecodealliance/wasm-pkg-tools
+
+inputs:
+  version:
+    description: The version of wkg to install
+    required: false
+    default: "0.15.0"
+
+runs:
+  using: composite
+  steps:
+    - name: Install wkg
+      shell: bash
+      run: |
+        curl -fsSL "https://github.com/bytecodealliance/wasm-pkg-tools/releases/download/v${{ inputs.version }}/wkg-x86_64-unknown-linux-gnu" -o wkg
+        install wkg /usr/local/bin/
