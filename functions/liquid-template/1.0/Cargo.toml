@@ -1,5 +1,5 @@
 [package]
-name = "liquid_templating"
+name = "liquid_template"
 version = "1.0.0"
 edition.workspace = true
 build = "../../../build.rs"

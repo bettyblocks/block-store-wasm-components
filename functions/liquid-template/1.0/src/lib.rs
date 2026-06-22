@@ -1,18 +1,18 @@
 mod bindings {
     wit_bindgen::generate!({ generate_all });
 
-    use crate::Liquid;
-    export!(Liquid);
+    use crate::LiquidTemplate;
+    export!(LiquidTemplate);
 }
 
-use crate::bindings::exports::betty_blocks::liquid::liquid::Guest;
+use crate::bindings::exports::betty_blocks::liquid_template::liquid_template::Guest;
 
-struct Liquid;
+struct LiquidTemplate;
 
-impl Guest for Liquid {
+impl Guest for LiquidTemplate {
     // The template and template variable are both defined in the front-end, meaning we have to use
     // either or none as they're not required.
-    fn liquid(
+    fn liquid_template(
         template: Option<String>,
         template_variable: Option<String>,
         variables: String,
@@ -51,13 +51,13 @@ fn render_template(
 
 #[test]
 fn can_render_template_without_variables() {
-    let result = Liquid::liquid(Some(String::from("hi")), None, String::from("{}")).unwrap();
+    let result = LiquidTemplate::liquid_template(Some(String::from("hi")), None, String::from("{}")).unwrap();
     assert_eq!(result, "hi");
 }
 
 #[test]
 fn cannot_render_template_with_missing_variable() {
-    let result = Liquid::liquid(
+    let result = LiquidTemplate::liquid_template(
         Some(String::from("hi {{something}}")),
         None,
         String::from("{}"),
@@ -67,7 +67,7 @@ fn cannot_render_template_with_missing_variable() {
 
 #[test]
 fn cannot_render_template_with_invalid_json() {
-    let result = Liquid::liquid(
+    let result = LiquidTemplate::liquid_template(
         Some(String::from("hi {{something}}")),
         None,
         String::from("{ \"incorrect_value\" }"),
@@ -80,7 +80,7 @@ fn cannot_render_template_with_invalid_json() {
 
 #[test]
 fn can_render_template_with_variable() {
-    let result = Liquid::liquid(
+    let result = LiquidTemplate::liquid_template(
         Some(String::from("hi {{something}}")),
         None,
         String::from("{ \"something\": \"value\" }"),
@@ -91,7 +91,7 @@ fn can_render_template_with_variable() {
 
 #[test]
 fn can_render_template_with_extra_variables() {
-    let result = Liquid::liquid(
+    let result = LiquidTemplate::liquid_template(
         Some(String::from("hi {{something}}")),
         None,
         String::from("{ \"something\": \"value\", \"something_else\": \"value\" }"),
@@ -102,7 +102,7 @@ fn can_render_template_with_extra_variables() {
 
 #[test]
 fn template_variable_definition_takes_precedence() {
-    let result = Liquid::liquid(
+    let result = LiquidTemplate::liquid_template(
         Some(String::from("hi")),
         Some(String::from("hi {{something}}")),
         String::from("{ \"something\": \"value\" }"),
@@ -113,6 +113,6 @@ fn template_variable_definition_takes_precedence() {
 
 #[test]
 fn no_template_or_template_variable_defintion_returns_empty_string() {
-    let result = Liquid::liquid(None, None, String::from("{}")).unwrap();
+    let result = LiquidTemplate::liquid_template(None, None, String::from("{}")).unwrap();
     assert_eq!(result, "");
 }
