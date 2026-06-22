@@ -1,8 +1,13 @@
-use crate::exports::betty_blocks::format_endpoint_result::format_endpoint_result::{
+mod bindings {
+    wit_bindgen::generate!({ generate_all });
+
+    use crate::FormatEndpointResult;
+    export!(FormatEndpointResult);
+}
+
+use crate::bindings::exports::betty_blocks::format_endpoint_result::format_endpoint_result::{
     Guest, Header, JsonString,
 };
-
-wit_bindgen::generate!({ generate_all });
 
 #[derive(Debug, Clone, serde::Serialize)]
 #[cfg_attr(test, derive(serde::Deserialize))]
@@ -14,9 +19,9 @@ struct FormattedEndpointResult {
     headers: Vec<(String, serde_json::Value)>,
 }
 
-struct Component;
+struct FormatEndpointResult;
 
-impl Guest for Component {
+impl Guest for FormatEndpointResult {
     fn format_endpoint_result(
         status_code: u16,
         body: JsonString,
@@ -42,8 +47,6 @@ impl Guest for Component {
     }
 }
 
-export! {Component}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -58,7 +61,7 @@ mod tests {
         }];
 
         let formatted_endpoint_result: FormattedEndpointResult = serde_json::from_str(
-            &Component::format_endpoint_result(status, body.clone(), headers.clone()).unwrap(),
+            &FormatEndpointResult::format_endpoint_result(status, body.clone(), headers.clone()).unwrap(),
         )
         .unwrap();
 
