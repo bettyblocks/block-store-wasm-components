@@ -27,6 +27,7 @@ fn exported_uuid_with_random_hex_is_valid() {
 
     assert_eq!(random_hex_part, "DEADBEEF");
     assert_eq!(uuid_part.len(), 36);
+    assert_eq!(component.call_count(RANDOM_HEX_INTERFACE, "generate-random-hex"), 1);
 }
 
 #[test]
@@ -71,6 +72,7 @@ fn uuid_batch_tracks_state_across_calls() {
     assert_eq!(collected.len(), 2);
     assert_eq!(collected[0], first);
     assert_eq!(collected[1], second);
+    assert_eq!(component.call_count(RANDOM_HEX_INTERFACE, "generate-random-hex"), 2);
 }
 
 #[test]
@@ -99,4 +101,5 @@ fn multiple_uuid_batches_have_independent_state() {
 
     assert_eq!(count_a, 3);
     assert_eq!(count_b, 1);
+    assert_eq!(component.call_count(RANDOM_HEX_INTERFACE, "generate-random-hex"), 4);
 }

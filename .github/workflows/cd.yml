@@ -26,7 +26,7 @@ jobs:
 
       - uses: extractions/setup-just@v3
 
-      - uses: ./.github/actions/install-wkg
+      - uses: wasco-dev/workflows/.github/actions/install-wkg@main
 
       - name: Build all components
         run: just build
