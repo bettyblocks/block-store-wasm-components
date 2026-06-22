@@ -1,68 +1,28 @@
-use std::cell::RefCell;
-
 pub mod bindings {
     wit_bindgen::generate!({ generate_all });
 
     use crate::GenerateUuid;
     export!(GenerateUuid);
 }
-use crate::bindings::betty_blocks::random_hex::random_hex::generate_random_hex;
-use crate::bindings::exports::betty_blocks::generate_uuid::generate_uuid::{
-    Guest, GuestUuidBatch,
-};
+
+use crate::bindings::exports::betty_blocks::generate_uuid::generate_uuid::Guest;
 
 pub struct GenerateUuid;
 
 impl Guest for GenerateUuid {
-    type UuidBatch = UuidBatchState;
-
     fn generate_uuid() -> String {
-        let uuid = make_the_uuid();
-        let random_hex = generate_random_hex(8);
-        format!("{uuid}-{random_hex}")
+        String::from(uuid::Uuid::new_v4())
     }
-}
-
-pub struct UuidBatchState {
-    generated: RefCell<Vec<String>>,
-}
-
-impl GuestUuidBatch for UuidBatchState {
-    fn new() -> Self {
-        UuidBatchState {
-            generated: RefCell::new(Vec::new()),
-        }
-    }
-
-    fn generate_next(&self) -> String {
-        let uuid = make_the_uuid();
-        let random_hex = generate_random_hex(8);
-        let result = format!("{uuid}-{random_hex}");
-        self.generated.borrow_mut().push(result.clone());
-        result
-    }
-
-    fn count(&self) -> u32 {
-        self.generated.borrow().len() as u32
-    }
-
-    fn collect(&self) -> Vec<String> {
-        self.generated.borrow().clone()
-    }
-}
-
-fn make_the_uuid() -> String {
-    String::from(uuid::Uuid::new_v4())
 }
 
 #[test]
-fn is_uuidv4_valid() {
-    let result = make_the_uuid();
+fn is_valid_uuidv4() {
+    let uuid = GenerateUuid::generate_uuid();
 
-    assert_eq!(result.len(), 36);
+    assert_eq!(uuid.len(), 32 + 4);
 
-    for (index, character) in result.chars().enumerate() {
-        if index == 8 || index == 13 || index == 18 || index == 23 {
+    for (index, character) in uuid.chars().enumerate() {
+        if index == 8 || index == 8 + 5 || index == 8 + 5 + 5 || index == 8 + 5 + 5 + 5 {
             assert_eq!(character, '-');
         } else if index == 14 {
             assert_eq!(character, '4');

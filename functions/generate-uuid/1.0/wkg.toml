@@ -1,2 +1,0 @@
-[overrides]
-"betty-blocks:random-hex" = { path = "../../random-hex/1.0/wit" }

@@ -223,19 +223,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chrono"
-version = "0.4.45"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
-dependencies = [
- "iana-time-zone",
- "js-sys",
- "num-traits",
- "wasm-bindgen",
- "windows-link",
-]
-
-[[package]]
 name = "cobs"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -443,15 +430,6 @@ checksum = "78c8292055d1c1df0cce5d180393dc8cce0abec0a7102adb6c7b1eef6016d60a"
 dependencies = [
  "generic-array",
  "typenum",
-]
-
-[[package]]
-name = "datetime"
-version = "1.0.0"
-dependencies = [
- "chrono",
- "proptest",
- "wit-bindgen 0.47.0",
 ]
 
 [[package]]
@@ -2215,6 +2193,7 @@ dependencies = [
 [[package]]
 name = "wasmtime-testing-helper"
 version = "0.1.0"
+source = "git+https://github.com/bettyblocks/wasmtime-testing-helper#fea0bc5efec4b76d34a359db4a5e111f2599bb5d"
 dependencies = [
  "wasmtime",
  "wasmtime-wasi",
