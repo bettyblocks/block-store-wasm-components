@@ -1,0 +1,9 @@
+package betty-blocks:generate-random-hex@1.0.0;
+
+interface generate-random-hex {
+    generate-random-hex: func(size: u32) -> string;
+}
+
+world main {
+    export generate-random-hex;
+}

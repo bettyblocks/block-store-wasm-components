@@ -1,12 +1,17 @@
 use rand::Rng;
 
-use crate::exports::betty_blocks::random_hex::random_hex::Guest;
+mod bindings {
+    wit_bindgen::generate!({ generate_all });
 
-wit_bindgen::generate!({ generate_all });
+    use crate::GenerateRandomHex;
+    export!(GenerateRandomHex);
+}
 
-struct RandomHex;
+use crate::bindings::exports::betty_blocks::generate_random_hex::generate_random_hex::Guest;
 
-impl Guest for RandomHex {
+struct GenerateRandomHex;
+
+impl Guest for GenerateRandomHex {
     fn generate_random_hex(size: u32) -> String {
         let mut rng_generator = rand::rng();
         let hex_generator_closure = || format!("{:X}", rng_generator.random_range(0..16));
@@ -15,28 +20,26 @@ impl Guest for RandomHex {
     }
 }
 
-export!(RandomHex);
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn randomness_test() {
-        let hex1 = RandomHex::generate_random_hex(1000);
-        let hex2 = RandomHex::generate_random_hex(1000);
+        let hex1 = GenerateRandomHex::generate_random_hex(1000);
+        let hex2 = GenerateRandomHex::generate_random_hex(1000);
         assert_ne!(hex1, hex2)
     }
 
     #[test]
     fn length_test() {
-        let hex = RandomHex::generate_random_hex(1000);
+        let hex = GenerateRandomHex::generate_random_hex(1000);
         assert_eq!(hex.len(), 1000)
     }
 
     #[test]
     fn content_validity_test() {
-        let hex = RandomHex::generate_random_hex(32);
+        let hex = GenerateRandomHex::generate_random_hex(32);
         assert!(u128::from_str_radix(&hex, 16).is_ok());
     }
 }
