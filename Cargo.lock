@@ -232,7 +232,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "concat_text"
+name = "concat-text"
 version = "1.0.0"
 dependencies = [
  "wasmtime",
@@ -544,7 +544,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "format_endpoint_result"
+name = "format-endpoint-result"
 version = "1.0.0"
 dependencies = [
  "serde",
@@ -627,7 +627,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "generate_random_hex"
+name = "generate-random-hex"
 version = "1.0.0"
 dependencies = [
  "rand 0.9.4",
@@ -637,7 +637,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "generate_uuid"
+name = "generate-uuid"
 version = "1.0.0"
 dependencies = [
  "uuid",
@@ -1006,7 +1006,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "liquid_template"
+name = "liquid-template"
 version = "1.0.0"
 dependencies = [
  "liquid",
@@ -1337,7 +1337,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "redirect"
+name = "redirect-url"
 version = "1.0.0"
 dependencies = [
  "serde",

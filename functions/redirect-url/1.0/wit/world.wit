@@ -1,0 +1,13 @@
+package betty-blocks:redirect-url@1.0.0;
+
+interface redirect-url {
+    type json-string = string;
+
+    // This returns a json-string because the regular return type uses a list of tuples, which is unsupported
+    redirect-url: func(redirect-url: string) -> result<json-string, string>;
+}
+
+world main {
+    export redirect-url;
+}
+

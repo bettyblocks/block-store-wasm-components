@@ -1,6 +1,11 @@
-use crate::exports::betty_blocks::redirect::redirect::{Guest, JsonString};
+mod bindings {
+    wit_bindgen::generate!({ generate_all });
 
-wit_bindgen::generate!({ generate_all });
+    use crate::RedirectUrl;
+    export!(RedirectUrl);
+}
+
+use crate::bindings::exports::betty_blocks::redirect_url::redirect_url::{Guest, JsonString};
 
 #[derive(Debug, Clone, serde::Serialize)]
 #[cfg_attr(test, derive(serde::Deserialize))]
@@ -11,20 +16,18 @@ struct FormattedEndpointResult {
     headers: Vec<(String, String)>,
 }
 
-struct Component;
+struct RedirectUrl;
 
-impl Guest for Component {
-    fn redirect(redirect_url: String) -> Result<JsonString, String> {
+impl Guest for RedirectUrl {
+    fn redirect_url(redirect_url: String) -> Result<JsonString, String> {
         serde_json::to_string(&FormattedEndpointResult {
             status_code: 302,
             body: String::from("Redirect"),
             headers: vec![(String::from("Location"), redirect_url)],
         })
-        .map_err(|_| String::from("Could not serialize redirect response as JSON"))
+        .map_err(|_error| String::from("Could not serialize redirect response as JSON"))
     }
 }
-
-export! {Component}
 
 #[cfg(test)]
 mod tests {
@@ -36,7 +39,7 @@ mod tests {
 
         assert_eq!(
             serde_json::from_str::<FormattedEndpointResult>(
-                &Component::redirect(url.clone()).unwrap()
+                &RedirectUrl::redirect_url(url.clone()).unwrap()
             )
             .unwrap()
             .headers[0]

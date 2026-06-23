@@ -1,5 +1,5 @@
 [package]
-name = "redirect"
+name = "redirect-url"
 version = "1.0.0"
 edition.workspace = true
 build = "../../../build.rs"

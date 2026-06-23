@@ -1,5 +1,5 @@
 [package]
-name = "concat_text"
+name = "concat-text"
 version = "1.0.0"
 edition.workspace = true
 build = "../../../build.rs"
