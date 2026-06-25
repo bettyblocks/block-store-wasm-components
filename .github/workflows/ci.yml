@@ -24,12 +24,6 @@ jobs:
 
       - uses: wasco-dev/workflows/.github/actions/install-wkg@main
 
-      - name: Install Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: ^2.6.9
-          cache: true
-
       - name: "formatting-check"
         run: RUSTFLAGS="--deny warnings" just format-check
 
