@@ -11,4 +11,5 @@ crate-type = ["cdylib"]
 wit-bindgen.workspace = true
 
 [dev-dependencies]
+wasmtime-testing-helper.workspace = true
 proptest = "1.11.0"

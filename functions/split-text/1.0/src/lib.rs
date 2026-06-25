@@ -1,6 +1,11 @@
-use crate::exports::betty_blocks::split_text::split_text::Guest;
+mod bindings {
+    wit_bindgen::generate!({ generate_all });
 
-wit_bindgen::generate!({ generate_all });
+    use crate::SplitText;
+    export!(SplitText);
+}
+
+use crate::bindings::exports::betty_blocks::split_text::split_text::Guest;
 
 struct SplitText;
 
@@ -17,8 +22,6 @@ impl Guest for SplitText {
     }
     */
 }
-
-export! {SplitText}
 
 #[test]
 fn split_all_splits_the_correct_amount_of_times() {
