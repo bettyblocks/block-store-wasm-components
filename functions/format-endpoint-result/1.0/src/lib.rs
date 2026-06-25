@@ -61,7 +61,8 @@ mod tests {
         }];
 
         let formatted_endpoint_result: FormattedEndpointResult = serde_json::from_str(
-            &FormatEndpointResult::format_endpoint_result(status, body.clone(), headers.clone()).unwrap(),
+            &FormatEndpointResult::format_endpoint_result(status, body.clone(), headers.clone())
+                .unwrap(),
         )
         .unwrap();
 

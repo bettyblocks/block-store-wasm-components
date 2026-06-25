@@ -9,7 +9,9 @@ fn string_operations_templating_works() {
     let harness = bindings::harness();
     let mut component = bindings::instantiate(harness);
 
-    let interface = component.component.betty_blocks_liquid_template_liquid_template();
+    let interface = component
+        .component
+        .betty_blocks_liquid_template_liquid_template();
     let rendered_template = interface
         .call_liquid_template(
             &mut component.store,
@@ -28,7 +30,9 @@ fn it_gives_template_variable_precedence_over_template() {
     let harness = bindings::harness();
     let mut component = bindings::instantiate(harness);
 
-    let interface = component.component.betty_blocks_liquid_template_liquid_template();
+    let interface = component
+        .component
+        .betty_blocks_liquid_template_liquid_template();
     let rendered_template = interface
         .call_liquid_template(
             &mut component.store,
@@ -47,7 +51,9 @@ fn it_does_not_work_with_no_json_object() {
     let harness = bindings::harness();
     let mut component = bindings::instantiate(harness);
 
-    let interface = component.component.betty_blocks_liquid_template_liquid_template();
+    let interface = component
+        .component
+        .betty_blocks_liquid_template_liquid_template();
     let result = interface
         .call_liquid_template(
             &mut component.store,

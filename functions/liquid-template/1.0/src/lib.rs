@@ -51,7 +51,9 @@ fn render_template(
 
 #[test]
 fn can_render_template_without_variables() {
-    let result = LiquidTemplate::liquid_template(Some(String::from("hi")), None, String::from("{}")).unwrap();
+    let result =
+        LiquidTemplate::liquid_template(Some(String::from("hi")), None, String::from("{}"))
+            .unwrap();
     assert_eq!(result, "hi");
 }
 

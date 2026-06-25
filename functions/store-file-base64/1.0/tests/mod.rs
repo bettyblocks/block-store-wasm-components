@@ -47,13 +47,19 @@ fn setup_harness() -> wasmtime_testing_helper::ComponentCompositionBuilder {
 #[test]
 fn stores_file_with_dot_extension() {
     let mut component = bindings::instantiate(setup_harness());
-    let interface = component.component.betty_blocks_store_file_base64_store_base64();
+    let interface = component
+        .component
+        .betty_blocks_store_file_base64_store_base64();
     let result = interface
         .call_store_file(
             &mut component.store,
             &test_helper_context(),
-            &Model { name: String::from("Document") },
-            &[Property { name: String::from("file") }],
+            &Model {
+                name: String::from("Document"),
+            },
+            &[Property {
+                name: String::from("file"),
+            }],
             TEST_BASE64,
             "testfile",
             ".jpg",
@@ -65,13 +71,19 @@ fn stores_file_with_dot_extension() {
 #[test]
 fn stores_file_with_extension_without_dot() {
     let mut component = bindings::instantiate(setup_harness());
-    let interface = component.component.betty_blocks_store_file_base64_store_base64();
+    let interface = component
+        .component
+        .betty_blocks_store_file_base64_store_base64();
     let result = interface
         .call_store_file(
             &mut component.store,
             &test_helper_context(),
-            &Model { name: String::from("Document") },
-            &[Property { name: String::from("file") }],
+            &Model {
+                name: String::from("Document"),
+            },
+            &[Property {
+                name: String::from("file"),
+            }],
             TEST_BASE64,
             "testfile",
             "jpg",
@@ -83,13 +95,19 @@ fn stores_file_with_extension_without_dot() {
 #[test]
 fn fails_with_empty_filename() {
     let mut component = bindings::instantiate(setup_harness());
-    let interface = component.component.betty_blocks_store_file_base64_store_base64();
+    let interface = component
+        .component
+        .betty_blocks_store_file_base64_store_base64();
     let result = interface
         .call_store_file(
             &mut component.store,
             &test_helper_context(),
-            &Model { name: String::from("Document") },
-            &[Property { name: String::from("file") }],
+            &Model {
+                name: String::from("Document"),
+            },
+            &[Property {
+                name: String::from("file"),
+            }],
             TEST_BASE64,
             "",
             ".jpg",
@@ -101,13 +119,19 @@ fn fails_with_empty_filename() {
 #[test]
 fn fails_with_whitespace_only_filename() {
     let mut component = bindings::instantiate(setup_harness());
-    let interface = component.component.betty_blocks_store_file_base64_store_base64();
+    let interface = component
+        .component
+        .betty_blocks_store_file_base64_store_base64();
     let result = interface
         .call_store_file(
             &mut component.store,
             &test_helper_context(),
-            &Model { name: String::from("Document") },
-            &[Property { name: String::from("file") }],
+            &Model {
+                name: String::from("Document"),
+            },
+            &[Property {
+                name: String::from("file"),
+            }],
             TEST_BASE64,
             "   ",
             ".jpg",
@@ -119,13 +143,19 @@ fn fails_with_whitespace_only_filename() {
 #[test]
 fn fails_with_empty_file_extension() {
     let mut component = bindings::instantiate(setup_harness());
-    let interface = component.component.betty_blocks_store_file_base64_store_base64();
+    let interface = component
+        .component
+        .betty_blocks_store_file_base64_store_base64();
     let result = interface
         .call_store_file(
             &mut component.store,
             &test_helper_context(),
-            &Model { name: String::from("Document") },
-            &[Property { name: String::from("file") }],
+            &Model {
+                name: String::from("Document"),
+            },
+            &[Property {
+                name: String::from("file"),
+            }],
             TEST_BASE64,
             "testfile",
             "",
@@ -137,12 +167,16 @@ fn fails_with_empty_file_extension() {
 #[test]
 fn fails_with_empty_property_list() {
     let mut component = bindings::instantiate(setup_harness());
-    let interface = component.component.betty_blocks_store_file_base64_store_base64();
+    let interface = component
+        .component
+        .betty_blocks_store_file_base64_store_base64();
     let result = interface
         .call_store_file(
             &mut component.store,
             &test_helper_context(),
-            &Model { name: String::from("Document") },
+            &Model {
+                name: String::from("Document"),
+            },
             &[],
             TEST_BASE64,
             "testfile",
@@ -155,17 +189,27 @@ fn fails_with_empty_property_list() {
 #[test]
 fn fails_with_invalid_base64() {
     let mut component = bindings::instantiate(setup_harness());
-    let interface = component.component.betty_blocks_store_file_base64_store_base64();
+    let interface = component
+        .component
+        .betty_blocks_store_file_base64_store_base64();
     let result = interface
         .call_store_file(
             &mut component.store,
             &test_helper_context(),
-            &Model { name: String::from("Document") },
-            &[Property { name: String::from("file") }],
+            &Model {
+                name: String::from("Document"),
+            },
+            &[Property {
+                name: String::from("file"),
+            }],
             "not-valid-base64!!!",
             "testfile",
             ".jpg",
         )
         .unwrap();
-    assert!(result.unwrap_err().starts_with("Failed to decode base64 source:"));
+    assert!(
+        result
+            .unwrap_err()
+            .starts_with("Failed to decode base64 source:")
+    );
 }
