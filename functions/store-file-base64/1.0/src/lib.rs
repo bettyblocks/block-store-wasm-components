@@ -1,21 +1,22 @@
 pub mod bindings {
-    wit_bindgen::generate!({
-        generate_all,
-    });
+    wit_bindgen::generate!({ generate_all });
+
+    use crate::StoreFileBase64;
+    export!(StoreFileBase64);
 }
 
 use bindings::{
-    betty_blocks::data_api::data_api::HelperContext,
-    betty_blocks::file::upload_file,
-    betty_blocks::types::types::Property,
+    betty_blocks_utilities::data_api::data_api::HelperContext,
+    betty_blocks_utilities::upload_file::upload_file,
+    betty_blocks_utilities::types::types::Property,
     exports::betty_blocks::store_file_base64::store_base64::{Guest as StoreGuest, Model},
 };
 
 use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
 
-struct Component;
+struct StoreFileBase64;
 
-impl StoreGuest for Component {
+impl StoreGuest for StoreFileBase64 {
     fn store_file(
         helper_context: HelperContext,
         model: Model,
@@ -66,8 +67,6 @@ impl StoreGuest for Component {
 fn string_is_empty(string: &str) -> bool {
     string.trim().is_empty()
 }
-
-bindings::export!(Component with_types_in bindings);
 
 #[cfg(test)]
 mod tests {
