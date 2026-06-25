@@ -1,13 +1,13 @@
 mod bindings {
-    wasmtime::component::bindgen!({ path: "wit", world: "main" });
-}
+    wasmtime_testing_helper::bindgen!("main");
 
-wasmtime_testing_helper::setup!(bindings);
+    wasmtime_testing_helper::setup!(Main);
+}
 
 #[test]
 fn concats_strings() {
-    let harness = harness();
-    let mut component = instantiate(harness);
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
 
     let interface = component.component.betty_blocks_concat_text_concat_text();
     let result = interface
@@ -19,8 +19,8 @@ fn concats_strings() {
 
 #[test]
 fn concats_strings_with_separator() {
-    let harness = harness();
-    let mut component = instantiate(harness);
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
 
     let interface = component.component.betty_blocks_concat_text_concat_text();
     let result = interface
@@ -32,8 +32,8 @@ fn concats_strings_with_separator() {
 
 #[test]
 fn concats_list_of_strings() {
-    let harness = harness();
-    let mut component = instantiate(harness);
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
 
     let interface = component.component.betty_blocks_concat_text_concat_text();
     let result = interface
@@ -55,8 +55,8 @@ fn concats_list_of_strings() {
 
 #[test]
 fn concats_list_of_strings_with_separator() {
-    let harness = harness();
-    let mut component = instantiate(harness);
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
 
     let interface = component.component.betty_blocks_concat_text_concat_text();
     let result = interface

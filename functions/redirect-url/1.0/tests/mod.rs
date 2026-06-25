@@ -1,14 +1,13 @@
 mod bindings {
-    wasmtime::component::bindgen!("main");
+    wasmtime_testing_helper::bindgen!("main");
 
+    wasmtime_testing_helper::setup!(Main);
 }
-
-wasmtime_testing_helper::setup!(bindings);
 
 #[test]
 fn redirects_url_correctly() {
-    let harness = harness();
-    let mut component = instantiate(harness);
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
 
     let interface = component.component.betty_blocks_redirect_url_redirect_url();
     let result = interface

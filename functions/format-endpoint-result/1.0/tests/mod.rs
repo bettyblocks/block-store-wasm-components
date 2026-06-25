@@ -1,15 +1,15 @@
 mod bindings {
-    wasmtime::component::bindgen!({ path: "wit", world: "main" });
+    wasmtime_testing_helper::bindgen!("main");
+
+    wasmtime_testing_helper::setup!(Main);
 }
 
 use crate::bindings::exports::betty_blocks::format_endpoint_result::format_endpoint_result::Header;
 
-wasmtime_testing_helper::setup!(bindings);
-
 #[test]
 fn formats_endpoints_correctly() {
-    let harness = harness();
-    let mut component = instantiate(harness);
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
 
     let interface = component
         .component

@@ -8,9 +8,8 @@ build = "../../../build.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-rand = "0.9.2"
+rand = "0.10.1"
 wit-bindgen.workspace = true
 
 [dev-dependencies]
-wasmtime.workspace = true
 wasmtime-testing-helper.workspace = true

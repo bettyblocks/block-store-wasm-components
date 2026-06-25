@@ -1,13 +1,13 @@
 mod bindings {
-    wasmtime::component::bindgen!({ path: "wit", world: "main" });
-}
+    wasmtime_testing_helper::bindgen!("main");
 
-wasmtime_testing_helper::setup!(bindings);
+    wasmtime_testing_helper::setup!(Main);
+}
 
 #[test]
 fn is_valid_uuidv4() {
-    let harness = harness();
-    let mut component = instantiate(harness);
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
 
     let interface = component
         .component

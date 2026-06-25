@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::RngExt;
 
 mod bindings {
     wit_bindgen::generate!({ generate_all });
