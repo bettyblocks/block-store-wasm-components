@@ -7,7 +7,7 @@ use crate::bindings::exports::betty_blocks::format_endpoint_result::format_endpo
 wasmtime_testing_helper::setup!(bindings);
 
 #[test]
-fn it_works() {
+fn formats_endpoints_correctly() {
     let harness = harness();
     let mut component = instantiate(harness);
 
