@@ -11,7 +11,7 @@
       "meta": {
         "type": "Text"
       },
-      "name": "redirect-URL",
+      "name": "redirect-url",
       "label": "Redirect URL",
       "info": "The url to redirect to",
       "advanced": false
