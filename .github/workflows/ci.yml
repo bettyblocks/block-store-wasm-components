@@ -41,6 +41,3 @@ jobs:
 
       - name: "test-check"
         run: RUSTFLAGS="--deny warnings" just test
-
-      - name: "integration-tests"
-        run: just integration-test

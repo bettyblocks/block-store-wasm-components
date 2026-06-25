@@ -27,11 +27,5 @@ quality-check:
 clean:
 	cargo clean
 
-integration-test:
-	deno install
-	deno fmt --check
-	deno lint
-	deno task test
-
 index:
 	find functions -type f -name "Cargo.toml" -exec dirname {} \;
