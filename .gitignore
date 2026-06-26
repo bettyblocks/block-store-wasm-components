@@ -2,5 +2,3 @@ target/
 
 **/wit/deps
 *.wasm
-
-!tests/example/calculator.wasm
