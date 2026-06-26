@@ -79,6 +79,10 @@ jobs:
     needs: [build]
     if: always() && needs.build.result == 'success'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, main]
+    environment: ${{ matrix.environment }}
 
     permissions:
       contents: read
