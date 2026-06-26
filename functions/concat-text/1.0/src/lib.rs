@@ -1,42 +1,45 @@
-use crate::exports::betty_blocks::concat_text::concat_text::Guest;
+mod bindings {
+    wit_bindgen::generate!({ generate_all });
 
-wit_bindgen::generate!({ generate_all });
+    use crate::ConcatText;
+    export!(ConcatText);
+}
+
+use crate::bindings::exports::betty_blocks::concat_text::concat_text::Guest;
 
 struct ConcatText;
 
 impl Guest for ConcatText {
-    fn concat_strings(first_string: String, second_string: String) -> String {
-        format!("{}{}", first_string, second_string)
+    fn concat_text(first_text: String, second_text: String) -> String {
+        format!("{}{}", first_text, second_text)
     }
 
-    fn concat_strings_with_separator(
-        first_string: String,
-        second_string: String,
+    fn concat_text_with_separator(
+        first_text: String,
+        second_text: String,
         separator: String,
     ) -> String {
-        format!("{}{}{}", first_string, separator, second_string)
+        format!("{}{}{}", first_text, separator, second_text)
     }
 
-    fn concat_string_list(strings: Vec<String>) -> String {
-        strings.join("")
+    fn concat_text_list(text_list: Vec<String>) -> String {
+        text_list.join("")
     }
 
-    fn concat_string_list_with_separator(strings: Vec<String>, separator: String) -> String {
-        strings.join(&separator)
+    fn concat_text_list_with_separator(text_list: Vec<String>, separator: String) -> String {
+        text_list.join(&separator)
     }
 }
 
-export! {ConcatText}
-
 #[test]
 fn can_concat_two_strings() {
-    let result = ConcatText::concat_strings(String::from("hi"), String::from("ha"));
+    let result = ConcatText::concat_text(String::from("hi"), String::from("ha"));
     assert_eq!(result, String::from("hiha"));
 }
 
 #[test]
 fn can_concat_two_strings_with_separator() {
-    let result = ConcatText::concat_strings_with_separator(
+    let result = ConcatText::concat_text_with_separator(
         String::from("hi"),
         String::from("ho"),
         String::from(" "),
@@ -46,7 +49,7 @@ fn can_concat_two_strings_with_separator() {
 
 #[test]
 fn can_concat_a_list_of_strings() {
-    let result = ConcatText::concat_string_list(
+    let result = ConcatText::concat_text_list(
         vec!["hi", "123", "ha", "ho"]
             .into_iter()
             .map(String::from)
@@ -57,7 +60,7 @@ fn can_concat_a_list_of_strings() {
 
 #[test]
 fn can_concat_a_list_of_strings_with_a_separator() {
-    let result = ConcatText::concat_string_list_with_separator(
+    let result = ConcatText::concat_text_list_with_separator(
         vec!["fi", "oa", "30", "22"]
             .into_iter()
             .map(String::from)

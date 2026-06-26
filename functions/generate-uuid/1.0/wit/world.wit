@@ -7,4 +7,3 @@ interface generate-uuid {
 world main {
     export generate-uuid;
 }
-

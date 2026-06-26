@@ -1,5 +1,5 @@
 [package]
-name = "split_text"
+name = "generate-random-hex"
 version = "1.0.0"
 edition.workspace = true
 build = "../../../build.rs"
@@ -8,8 +8,8 @@ build = "../../../build.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
+rand = "0.10.1"
 wit-bindgen.workspace = true
 
 [dev-dependencies]
 wasmtime-testing-helper.workspace = true
-proptest.workspace = true

@@ -1,23 +1,18 @@
-pub mod bindings {
-    wit_bindgen::generate!({ generate_all });
+mod bindings {
+    wasmtime_testing_helper::bindgen!("main");
 
-    use crate::GenerateUuid;
-    export!(GenerateUuid);
-}
-
-use crate::bindings::exports::betty_blocks::generate_uuid::generate_uuid::Guest;
-
-pub struct GenerateUuid;
-
-impl Guest for GenerateUuid {
-    fn generate_uuid() -> String {
-        String::from(uuid::Uuid::new_v4())
-    }
+    wasmtime_testing_helper::setup!(Main);
 }
 
 #[test]
 fn is_valid_uuidv4() {
-    let uuid = GenerateUuid::generate_uuid();
+    let harness = bindings::harness();
+    let mut component = bindings::instantiate(harness);
+
+    let interface = component
+        .component
+        .betty_blocks_generate_uuid_generate_uuid();
+    let uuid = interface.call_generate_uuid(&mut component.store).unwrap();
 
     assert_eq!(uuid.len(), 32 + 4);
 
