@@ -48,8 +48,6 @@ fn concats_list_of_strings() {
         )
         .unwrap();
 
-    dbg!(&result);
-
     assert_eq!("hihahi123", result);
 }
 
@@ -71,8 +69,6 @@ fn concats_list_of_strings_with_separator() {
             "-",
         )
         .unwrap();
-
-    dbg!(&result);
 
     assert_eq!("something-what-hello-22!", result);
 }
