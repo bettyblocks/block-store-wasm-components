@@ -6,13 +6,13 @@ pub mod bindings {
 }
 
 use bindings::{
+    betty_blocks_types::data_api::data_api::HelperContext as UploadHelperContext,
+    betty_blocks_types::types::types::{BettyModel, BettyProperty},
+    betty_blocks_types::upload_file::upload_file,
     betty_blocks_utilities::data_api::data_api::HelperContext,
     betty_blocks_utilities::types::types::Property,
-    betty_blocks_utilities::upload_file::upload_file,
     exports::betty_blocks::store_file_base64::store_base64::{Guest as StoreGuest, Model},
 };
-
-use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
 
 struct StoreFileBase64;
 
@@ -37,10 +37,6 @@ impl StoreGuest for StoreFileBase64 {
             .next()
             .ok_or("Failed to fetch file property")?;
 
-        let file_bytes = BASE64
-            .decode(&data)
-            .map_err(|error| format!("Failed to decode base64 source: {error}"))?;
-
         let full_filename = if file_extension.starts_with('.') {
             format!("{filename}{file_extension}")
         } else {
@@ -48,12 +44,28 @@ impl StoreGuest for StoreFileBase64 {
             format!("{filename}.{file_extension}")
         };
 
+        // upload-file@3.0.0 lives under a different WIT package (betty-blocks-types)
+        // than our own exported interface (betty-blocks-utilities), so its
+        // identically-shaped record types are distinct Rust types requiring
+        // a field-by-field conversion.
+        let upload_helper_context = UploadHelperContext {
+            application_id: helper_context.application_id,
+            action_id: helper_context.action_id,
+            log_id: helper_context.log_id,
+            encrypted_configurations: helper_context.encrypted_configurations,
+            jwt: helper_context.jwt,
+        };
+        let model = BettyModel { name: model.name };
+        let property = BettyProperty {
+            name: property.name,
+        };
+
         let upload_result = upload_file::upload(
-            &helper_context,
+            &upload_helper_context,
             &upload_file::Input {
                 model,
                 property,
-                file_bytes,
+                file_base64: data,
                 full_filename,
             },
         )
