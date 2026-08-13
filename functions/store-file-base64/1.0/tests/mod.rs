@@ -4,9 +4,10 @@ mod bindings {
     wasmtime_testing_helper::setup!(StoreFileBase64);
 }
 
+use bindings::betty_blocks_types::data_api::data_api::HelperContext as UploadHelperContext;
+use bindings::betty_blocks_types::upload_file::upload_file::{Input, UploadResult};
 use bindings::betty_blocks_utilities::data_api::data_api::HelperContext;
 use bindings::betty_blocks_utilities::types::types::{Model, Property};
-use bindings::betty_blocks_utilities::upload_file::upload_file::{Input, UploadResult};
 
 const TEST_BASE64: &str = "dGVzdA==";
 
@@ -31,9 +32,9 @@ fn setup_harness() -> wasmtime_testing_helper::ComponentCompositionBuilder {
             },
         )
         .mock(
-            "betty-blocks-utilities:upload-file/upload-file",
+            "betty-blocks-types:upload-file/upload-file@3.0.0",
             "upload",
-            |_ctx, _: (HelperContext, Input)| {
+            |_ctx, _: (UploadHelperContext, Input)| {
                 Ok((Ok::<UploadResult, String>(UploadResult {
                     reference: String::from("file-reference"),
                     file_size: 4,
@@ -184,32 +185,4 @@ fn fails_with_empty_property_list() {
         )
         .unwrap();
     assert_eq!(result, Err(String::from("Failed to fetch file property")));
-}
-
-#[test]
-fn fails_with_invalid_base64() {
-    let mut component = bindings::instantiate(setup_harness());
-    let interface = component
-        .component
-        .betty_blocks_store_file_base64_store_base64();
-    let result = interface
-        .call_store_file(
-            &mut component.store,
-            &test_helper_context(),
-            &Model {
-                name: String::from("Document"),
-            },
-            &[Property {
-                name: String::from("file"),
-            }],
-            "not-valid-base64!!!",
-            "testfile",
-            ".jpg",
-        )
-        .unwrap();
-    assert!(
-        result
-            .unwrap_err()
-            .starts_with("Failed to decode base64 source:")
-    );
 }

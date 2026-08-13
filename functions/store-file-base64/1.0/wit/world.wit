@@ -18,7 +18,7 @@ world store-file-base64 {
     import wasi:http/outgoing-handler@0.2.0;
     import wasi:random/random@0.2.0;
     import betty-blocks-utilities:data-api/data-api;
-    import betty-blocks-utilities:upload-file/upload-file;
+    import betty-blocks-types:upload-file/upload-file@3.0.0;
     import betty-blocks-utilities:types/types;
 
     export store-base64;
