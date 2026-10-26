@@ -1,0 +1,4 @@
+[namespace_registries]
+wasi = "wasi.dev"
+wasmcloud = "wasmcloud.com"
+betty-blocks-types = "bettyblocksdev.azurecr.io"
