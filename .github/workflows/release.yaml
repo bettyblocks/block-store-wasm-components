@@ -1,0 +1,122 @@
+name: Release WASM Components to Betty Blocks
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+# One release at a time, so two runs never race on the same tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  # Build and publish once per GitHub environment: each one fetches WIT deps
+  # from, and publishes to, its own Azure registry (secrets.AZURE_REGISTRY is
+  # scoped per environment: dev -> bettyblocksdev, which serves edge and
+  # acceptance; main -> prod).
+  release:
+    needs: [ci]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [dev, main]
+    environment: ${{ matrix.environment }}
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: wasm32-wasip2
+          cache-directories: "./target"
+          cache-all-crates: "true"
+
+      - uses: extractions/setup-just@v3
+
+      - uses: bettyblocks/wasm-base-components/.github/actions/install-wkg@main
+        with:
+          version: "0.15.1"
+
+      # The committed wkg-config.toml points at the dev registry (bettyblocksdev)
+      # for local dev and PR CI. On release we fetch WIT deps from the
+      # environment's registry.
+      - name: Point wkg-config.toml at the environment registry
+        env:
+          AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
+        run: |
+          sed -i -E "s|^(betty-blocks-types = ).*|\1\"${AZURE_REGISTRY}\"|" wkg-config.toml
+          cat wkg-config.toml
+
+      - name: Build all components
+        run: just build
+
+      - name: Log in to Azure registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AZURE_REGISTRY }}
+          username: ${{ secrets.AZURE_USERNAME }}
+          password: ${{ secrets.AZURE_PASSWORD }}
+
+      # This points to someregistry.io/betty-blocks/<package>:<version>.
+      # The reason for this is that wkg resolves the path of the package to fetch
+      # through the supposed WIT package namespace, which is betty-blocks.
+      #
+      # Published tags are immutable: a tag that already exists is skipped,
+      # never overwritten (the runtime precompiles each tag once, so a new
+      # build under an old tag would not reach deployed apps). Ship a change
+      # by bumping the version in wit/world.wit, which Version Check enforces.
+      - name: Push new component versions to Azure registry
+        env:
+          AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
+          REGISTRY_USERNAME: ${{ secrets.AZURE_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.AZURE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          pushed=0
+          skipped=0
+          for MANIFEST in functions/*/*/Cargo.toml; do
+            COMPONENT_DIRECTORY=$(dirname "$MANIFEST")
+            REFERENCE="$(sed -nE '1s/package betty-blocks:([a-z0-9-]+)@([0-9]+\.[0-9]+\.[0-9]+);/betty-blocks\/\1:\2/p' "$COMPONENT_DIRECTORY/wit/world.wit")"
+            if [ -z "$REFERENCE" ]; then
+              echo "::error::no 'package betty-blocks:<name>@<x.y.z>;' on the first line of $COMPONENT_DIRECTORY/wit/world.wit"
+              exit 1
+            fi
+            WASM_FILES=("$COMPONENT_DIRECTORY/"*.wasm)
+            if [ "${#WASM_FILES[@]}" -ne 1 ]; then
+              echo "::error::expected one .wasm in $COMPONENT_DIRECTORY, found ${#WASM_FILES[@]}"
+              exit 1
+            fi
+
+            status=0
+            ./scripts/tag-exists.sh "$AZURE_REGISTRY" "${REFERENCE%:*}" "${REFERENCE##*:}" || status=$?
+            case "$status" in
+              0)
+                echo "::notice::$REFERENCE already exists in ${{ matrix.environment }}, skipping"
+                skipped=$((skipped + 1))
+                ;;
+              1)
+                echo "Pushing $REFERENCE"
+                wkg oci push "$AZURE_REGISTRY/$REFERENCE" "${WASM_FILES[0]}"
+                pushed=$((pushed + 1))
+                ;;
+              *)
+                echo "::error::could not tell whether $REFERENCE exists in ${{ matrix.environment }}"
+                exit 1
+                ;;
+            esac
+          done
+          echo "Pushed $pushed new component version(s), skipped $skipped existing one(s)."

@@ -1,15 +1,11 @@
-package betty-blocks:liquid-template@1.0.0;
+package betty-blocks:liquid-template@2.0.0;
 
 interface liquid-template {
-    record variable {
-        %key: string,
-        %value: string
-    }
+    use betty-blocks-types:types/types@3.2.0.{betty-value, json-string};
 
-    liquid-template: func(template: option<string>, template-variable: option<string>, variables: string) -> result<string, string>;
+    liquid-template: func(template: option<string>, template-variable: option<betty-value>, variables: json-string) -> result<string, string>;
 }
 
 world main {
     export liquid-template;
 }
-
