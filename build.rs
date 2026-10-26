@@ -21,6 +21,10 @@ fn main() {
         .expect("Failed to run `wkg wit fetch`. `wkg` is likely not installed.");
 
     if !status.success() {
-        println!("cargo:warning=`wkg wit fetch` failed. Using existing WIT deps if available.");
+        panic!(
+            "`wkg wit fetch` failed ({status}); see the wkg error above. Check that every \
+             namespace in wit/world.wit has a registry in the wkg config (WKG_CONFIG_FILE, \
+             or wkg-config.toml at the repository root) and that the registry is reachable."
+        );
     }
 }

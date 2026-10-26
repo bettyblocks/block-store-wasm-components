@@ -17,13 +17,26 @@ impl Guest for LiquidTemplate {
         template_variable: Option<String>,
         variables: String,
     ) -> Result<String, String> {
-        if let Some(template) = template_variable {
-            build_template(template, variables)
-        } else if let Some(template) = template {
+        let template_variable = template_variable
+            .map(|value| parse_template_variable(&value))
+            .transpose()?
+            .flatten();
+
+        if let Some(template) = template_variable.or(template) {
             build_template(template, variables)
         } else {
             Ok(String::default())
         }
+    }
+}
+
+fn parse_template_variable(value: &str) -> Result<Option<String>, String> {
+    match serde_json::from_str(value)
+        .map_err(|error| format!("Template variable JSON: {}", error))?
+    {
+        serde_json::Value::String(template) => Ok(Some(template)),
+        serde_json::Value::Null => Ok(None),
+        _ => Err(String::from("Template variable must be text")),
     }
 }
 
@@ -106,7 +119,7 @@ fn can_render_template_with_extra_variables() {
 fn template_variable_definition_takes_precedence() {
     let result = LiquidTemplate::liquid_template(
         Some(String::from("hi")),
-        Some(String::from("hi {{something}}")),
+        Some(String::from("\"hi {{something}}\"")),
         String::from("{ \"something\": \"value\" }"),
     )
     .unwrap();
@@ -117,4 +130,46 @@ fn template_variable_definition_takes_precedence() {
 fn no_template_or_template_variable_defintion_returns_empty_string() {
     let result = LiquidTemplate::liquid_template(None, None, String::from("{}")).unwrap();
     assert_eq!(result, "");
+}
+
+#[test]
+fn template_variable_null_falls_back_to_template() {
+    let result = LiquidTemplate::liquid_template(
+        Some(String::from("hi {{something}}")),
+        Some(String::from("null")),
+        String::from("{ \"something\": \"value\" }"),
+    )
+    .unwrap();
+    assert_eq!(result, "hi value");
+}
+
+#[test]
+fn template_variable_without_template_is_used() {
+    let result = LiquidTemplate::liquid_template(
+        None,
+        Some(String::from("\"Hello {{ name }}\"")),
+        String::from("{ \"name\": \"Betty\" }"),
+    )
+    .unwrap();
+    assert_eq!(result, "Hello Betty");
+}
+
+#[test]
+fn template_variable_that_is_not_text_is_an_error() {
+    let result = LiquidTemplate::liquid_template(
+        Some(String::from("hi")),
+        Some(String::from("42")),
+        String::from("{}"),
+    );
+    assert_eq!(result.unwrap_err(), "Template variable must be text");
+}
+
+#[test]
+fn template_variable_that_is_not_json_is_an_error() {
+    let result = LiquidTemplate::liquid_template(
+        Some(String::from("hi")),
+        Some(String::from("hi {{something}}")),
+        String::from("{}"),
+    );
+    assert!(result.unwrap_err().starts_with("Template variable JSON: "));
 }
