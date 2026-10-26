@@ -6,21 +6,19 @@ pub mod bindings {
 }
 
 use bindings::{
-    betty_blocks_utilities::data_api::data_api::HelperContext,
-    betty_blocks_utilities::types::types::Property,
-    betty_blocks_utilities::upload_file::upload_file,
-    exports::betty_blocks::store_file_base64::store_base64::{Guest as StoreGuest, Model},
+    betty_blocks_types::data_api::data_api::HelperContext,
+    betty_blocks_types::types::types::BettyProperty,
+    betty_blocks_types::upload_file::upload_file,
+    exports::betty_blocks::store_file_base64::store_base64::{BettyModel, Guest as StoreGuest},
 };
-
-use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
 
 struct StoreFileBase64;
 
 impl StoreGuest for StoreFileBase64 {
     fn store_file(
         helper_context: HelperContext,
-        model: Model,
-        property: Vec<Property>,
+        model: BettyModel,
+        property: Vec<BettyProperty>,
         data: String,
         filename: String,
         file_extension: String,
@@ -37,10 +35,6 @@ impl StoreGuest for StoreFileBase64 {
             .next()
             .ok_or("Failed to fetch file property")?;
 
-        let file_bytes = BASE64
-            .decode(&data)
-            .map_err(|error| format!("Failed to decode base64 source: {error}"))?;
-
         let full_filename = if file_extension.starts_with('.') {
             format!("{filename}{file_extension}")
         } else {
@@ -53,7 +47,7 @@ impl StoreGuest for StoreFileBase64 {
             &upload_file::Input {
                 model,
                 property,
-                file_bytes,
+                file_base64: data,
                 full_filename,
             },
         )
