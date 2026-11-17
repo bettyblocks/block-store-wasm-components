@@ -1,0 +1,9 @@
+package betty-blocks:hmac-sha256@1.0.0;
+
+interface hmac-sha256 {
+    hmac-sha256: func(key: string, message: string) -> string;
+}
+
+world main {
+    export hmac-sha256;
+}

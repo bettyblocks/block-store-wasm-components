@@ -1,0 +1,45 @@
+{
+  "description": "Calculates the HMAC-SHA256 of a text with a secret key and returns it as a lowercase hex string",
+  "label": "HMAC SHA256",
+  "category": "String Functions",
+  "icon": {
+    "name": "LockIcon",
+    "color": "Blue"
+  },
+  "options": [
+    {
+      "meta": {
+        "type": "Text",
+        "validations": {
+          "required": true
+        }
+      },
+      "name": "key",
+      "label": "Key",
+      "info": "The secret key used to sign the message"
+    },
+    {
+      "meta": {
+        "type": "Text",
+        "validations": {
+          "required": true
+        }
+      },
+      "name": "message",
+      "label": "Message",
+      "info": "The text to calculate the HMAC for"
+    },
+    {
+      "meta": {
+        "type": "Output",
+        "output": {
+          "type": "Text"
+        }
+      },
+      "name": "result",
+      "label": "Result",
+      "info": "The HMAC-SHA256 as a lowercase hex string"
+    }
+  ],
+  "yields": "NONE"
+}
