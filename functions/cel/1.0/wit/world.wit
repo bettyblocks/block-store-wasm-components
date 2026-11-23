@@ -1,0 +1,12 @@
+package betty-blocks:cel@1.0.0;
+
+interface cel {
+    use betty-blocks-types:types/types@3.2.0.{json-string};
+
+    // The result is returned as a json-string because a CEL value can be any JSON type.
+    evaluate: func(expression: string, variables: json-string) -> result<json-string, string>;
+}
+
+world main {
+    export cel;
+}
