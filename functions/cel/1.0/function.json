@@ -1,0 +1,43 @@
+{
+  "label": "CEL",
+  "description": "Evaluate a Common Expression Language (CEL) expression",
+  "category": "Logic",
+  "icon": {
+    "name": "BracketsCurly",
+    "color": "Orange"
+  },
+  "options": [
+    {
+      "meta": {
+        "type": "MultilineText",
+        "validations": { "required": true }
+      },
+      "name": "expression",
+      "label": "Expression",
+      "info": "A CEL expression. Every key of the context is available as a variable.",
+      "configuration": {
+        "placeholder": "order.total > 100 && customer.tier == 'gold'"
+      }
+    },
+    {
+      "info": "Map the values that you want to use in your expression",
+      "label": "Context",
+      "meta": {
+        "type": "Map"
+      },
+      "name": "variables"
+    },
+    {
+      "meta": {
+        "type": "Output",
+        "validations": { "required": true },
+        "output": {
+          "type": "Text"
+        }
+      },
+      "name": "as",
+      "label": "As"
+    }
+  ],
+  "yields": "NONE"
+}
